@@ -11,7 +11,7 @@ In the test you could get the elements of the screen and assert if all the frame
 
 Or you could use UI tests provided by Xcode. But those are slow and in my experience sometimes they just stop working.
 
-There is a better alternative. Uber has an open source component called iOSSnapshotTestCase. With this you can create snapshot tests. A snapshot test compares the UI of a view with a snapshot of how the view should look like. Let’s see how this works.
+There is a better alternative. Uber has an open source component called [ios-snapshot-test-case](https://github.com/uber/ios-snapshot-test-case/). With this you can create snapshot tests. A snapshot test compares the UI of a view with a snapshot of how the view should look like. Let’s see how this works.
 
 The UI I would like to test looks like this:
 
