@@ -1,0 +1,112 @@
+---
+layout: post
+title: Stubbing NSURLSession With Dependency Injection
+date: 2015-04-06 20:06:45.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- TDD
+- Tips
+tags:
+- HTTP
+- Requests
+- Stubbing
+- Testing
+- Unit Tests
+meta:
+  _edit_last: '1'
+  _jetpack_related_posts_cache: a:1:{s:32:"8f6677c9d6b0f903e98ad32ec61f8deb";a:2:{s:7:"expires";i:1437241130;s:7:"payload";a:3:{i:0;a:1:{s:2:"id";i:541;}i:1;a:1:{s:2:"id";i:326;}i:2;a:1:{s:2:"id";i:498;}}}}
+  robotsmeta: index,follow
+  _wpcom_is_markdown: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>I think I found a nice way to stub <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span> using dependency injection.</p>
+<p>Let's say you have an app that should fetch the info of a user from App.net and create a user object/struct from that info. To be able to unit test that feature you want to stub the HTTP request in the test.</p>
+<p>You could use <a href="https://github.com/kylef/Mockingjay">Mockingjay</a> or you could write your own <a href="http://www.raywenderlich.com/59982/nsurlprotocol-tutorial">NSURLProtocol</a>. But with Swift 1.2 there is an even simpler approach.</p>
+<p>In the test you can inject the mock class to be used instead of <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span>.</p>
+<p>Here is the view controller with the method to fetch the user data:</p>
+<pre class="lang:swift decode:true ">import UIKit
+
+public class SwiftViewController: UIViewController {
+
+  public var MySession = NSURLSession.self
+  public var user: User?
+  
+  public func loadUser() {
+    let url = NSURL(string: "https://api.app.net/users/@dasdom")
+    let session = MySession.sharedSession()
+    let task = session.dataTaskWithURL(url!, completionHandler: { (data, response, error) -&gt; Void in
+      let dataDict = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil) as! [String:AnyObject]
+      
+      let userDict = dataDict["data"] as! [String:AnyObject]
+      
+      self.user = User(username: userDict["username"] as! String, name: userDict["name"] as! String, id: userDict["id"] as! String)
+      
+    })
+    task.resume()
+  }
+}
+</pre>
+<p>This code is straight forward. The only piece that is noteworthy it the first property:</p>
+<pre class="lang:swift decode:true ">public var MySession = NSURLSession.self</pre>
+<p><span class="lang:swift decode:true  crayon-inline ">MySession</span> is a <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span> type.</p>
+<p>Let's write a mock for that class. You will have to mock  <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span> and  <span class="lang:swift decode:true  crayon-inline ">NSURLSessionDataTask</span>. Here is the smallest implementation that can stub  <span class="lang:swift decode:true  crayon-inline ">dataTaskWithURL(_:,completionHandler:)</span>:</p>
+<pre class="lang:swift decode:true ">class MockSession: NSURLSession {
+  var completionHandler: ((NSData!, NSURLResponse!, NSError!) -&gt; Void)?
+  
+  static var mockResponse: (data: NSData?, urlResponse: NSURLResponse?, error: NSError?) = (data: nil, urlResponse: nil, error: nil)
+  
+  override class func sharedSession() -&gt; NSURLSession {
+    return MockSession()
+  }
+  
+  override func dataTaskWithURL(url: NSURL, completionHandler: ((NSData!, NSURLResponse!, NSError!) -&gt; Void)?) -&gt; NSURLSessionDataTask {
+    self.completionHandler = completionHandler
+    return MockTask(response: MockSession.mockResponse, completionHandler: completionHandler)
+  }
+  
+  class MockTask: NSURLSessionDataTask {
+    typealias Response = (data: NSData?, urlResponse: NSURLResponse?, error: NSError?)
+    var mockResponse: Response
+    let completionHandler: ((NSData!, NSURLResponse!, NSError!) -&gt; Void)?
+    
+    init(response: Response, completionHandler: ((NSData!, NSURLResponse!, NSError!) -&gt; Void)?) {
+      self.mockResponse = response
+      self.completionHandler = completionHandler
+    }
+    override func resume() {
+      completionHandler!(mockResponse.data, mockResponse.urlResponse, mockResponse.error)
+    }
+  }
+}
+</pre>
+<p>The mock session class has a static property (which will be used as a class property here) to store the mock response and a property to keep a reference of the passed in completion handler when  <span class="lang:swift decode:true  crayon-inline ">dataTaskWithURL...</span> is called. It overrides the class method <span class="lang:swift decode:true  crayon-inline ">sharedSession()</span> and  <span class="lang:swift decode:true  crayon-inline ">dataTaskWithURL(_:,completionHandler)</span>.</p>
+<p>The mock task class is defined within the mock session class. It has two properties,  <span class="lang:swift decode:true  crayon-inline ">dataTaskWithURL(_:,completionHandler)</span> and  <span class="lang:swift decode:true  crayon-inline ">completionHandler</span> and it overrides <span class="lang:swift decode:true  crayon-inline ">resume()</span> to call the completion handler with the test response instead.</p>
+<p>The test then looks like:</p>
+<pre class="lang:swift decode:true ">func testExample() {
+  
+  let jsonData = NSJSONSerialization.dataWithJSONObject(["meta": ["code": 200], "data": ["username": "dasdom", "name": "Dpminik Hauser", "id": "1472"]], options: nil,
+error: nil)
+  let urlResponse = NSHTTPURLResponse(URL: NSURL(string: "https://api.app.net/posts/stream/global")!, statusCode: 200, HTTPVersion: nil, headerFields: nil)
+  
+  MockSession.mockResponse = (jsonData, urlResponse: urlResponse, error: nil)
+  viewController.MySession = MockSession.self
+  
+  XCTAssertTrue(viewController.user == nil, "")
+  
+  viewController.loadUser()
+  
+  XCTAssertEqual(viewController.user!.username, "dasdom", "")
+}
+</pre>
+<p>Note the dependency injection on the line:</p>
+<pre class="lang:swift decode:true ">viewController.MySession = MockSession.self
+</pre>
+<p>That's it. Light and easy to read. HTTP stubbing done within minutes.</p>
+<p>I would love to hear your feedback to this stubbing method.</p>

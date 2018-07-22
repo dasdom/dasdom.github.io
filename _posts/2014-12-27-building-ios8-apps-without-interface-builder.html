@@ -1,0 +1,43 @@
+---
+layout: post
+title: Building iOS8 Apps Without Interface Builder
+date: 2014-12-27 08:20:23.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- Tips
+tags:
+- empty project
+- iOS8
+- storyboard
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _jetpack_related_posts_cache: a:1:{s:32:"8f6677c9d6b0f903e98ad32ec61f8deb";a:2:{s:7:"expires";i:1437216705;s:7:"payload";a:3:{i:0;a:1:{s:2:"id";i:100;}i:1;a:1:{s:2:"id";i:300;}i:2;a:1:{s:2:"id";i:563;}}}}
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>I don't like the Interface Builder. In Xcode 5 people like me could chose the empty project template. This template was meant to be used in projects without xibs or storyboards. In Xcode 6 this template is gone. So let's use one of the given templates and remove the storyboard.</p>
+<p>Start Xcode and create a new project. In the template chooser select the Single View Application template.</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/07/templateChooser.jpg"><img src="{{ site.baseurl }}/assets/templateChooser.jpg" alt="templateChooser" width="731" height="428" class="alignnone size-full wp-image-294" /></a> </p>
+<p>Give it a name an a place to be stored. Then remove the storyboard.</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/07/removeStoryboard1.jpg"><img src="{{ site.baseurl }}/assets/removeStoryboard1.jpg" alt="removeStoryboard1" width="263" height="267" class="alignnone size-full wp-image-292" /></a></p>
+<p>Remove the storyboard in the Deployment Info of you Target (delete the "Main" in the "Main Interface" drop down; leave it empty).</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/07/removeStoryboard2.jpg"><img src="{{ site.baseurl }}/assets/removeStoryboard2.jpg" alt="removeStoryboard2" width="448" height="301" class="alignnone size-full wp-image-293" /></a></p>
+<p>Initialize the window and make it key and visible in the application delegate.</p>
+<pre class="lang:swift decode:true ">func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -&gt; Bool {
+        window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        
+        window!.rootViewController = ViewController(nibName: nil, bundle: nil)
+        window!.makeKeyAndVisible()
+        window!.backgroundColor = UIColor.whiteColor()
+        return true
+    }
+</pre>
+<p>Done. Enjoy the clean and pure code project.</p>

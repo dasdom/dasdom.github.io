@@ -1,0 +1,82 @@
+---
+layout: post
+title: Tweet in iOS using Swift
+date: 2014-11-30 11:44:23.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- Swift
+- tweet
+- Twitter
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _yoast_wpseo_linkdex: '76'
+  _yoast_wpseo_focuskw: Tweet
+  _yoast_wpseo_metadesc: How to tweet using the build in Twitter integration of iOS.
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>First import `Accounts`, `Social` and get the account store</p>
+<pre class="lang:swift decode:true ">
+import Accounts
+import Social
+
+...
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        accountStore = ACAccountStore()
+    
+    }
+</pre>
+<p>Present the user a table view with all the Twitter account which are set in the Settings app</p>
+<pre class="lang:swift decode:true ">let accountType = accountStore!.accountTypeWithAccountTypeIdentifier(ACAccountTypeIdentifierTwitter)
+        
+println("accountType: (accountType)")
+        
+accountStore!.requestAccessToAccountsWithType(accountType, options: nil, completion: { [unowned self] (granted, error) in
+    println("granted: (granted)")
+    self.accounts = self.accountStore?.accounts
+    dispatch_async(dispatch_get_main_queue(), { () -&gt; Void in
+        self.tableView.reloadData()
+    })
+})</pre>
+<p>When the user selects an account she wants to user for tweeting, save the account id in<br />
+ <span class="lang:swift decode:true  crayon-inline ">NSUserDefaults</span>:</p>
+<pre class="lang:swift decode:true ">override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    let account = accounts![indexPath.row] as ACAccount
+    if activeAccountId == account.identifier {
+        activeAccountId = nil
+    } else {
+        activeAccountId = account.identifier
+    }
+    NSUserDefaults.standardUserDefaults().setObject(activeAccountId, forKey: kActiveAccountIdKey)
+    NSUserDefaults.standardUserDefaults().synchronize()
+    tableView.reloadData()
+}</pre>
+<p>Now you are ready to tweet. Get the account and make a tweet request:</p>
+<pre class="lang:swift decode:true ">
+if let accountIdentifier = NSUserDefaults.standardUserDefaults().stringForKey(kActiveAccountIdKey) {
+    let parameters = ["status" : "Awesome Tweet!"]
+    let tweetRequest = SLRequest(forServiceType: SLServiceTypeTwitter, requestMethod: .POST, URL: NSURL(string: "https://api.twitter.com/1.1/statuses/update.json"), parameters: parameters)
+
+    let account = accountStore?.accountWithIdentifier(accountIdentifier)
+    tweetRequest.account = account
+    tweetRequest.performRequestWithHandler { (tweetData, tweetResponse, tweetError) in
+        println("error: (tweetError)")
+        println("tweetResponse: (tweetResponse)")
+    }
+}
+</pre>
+<p>Done.</p>
+<p>If you have any comments about this post, you can find my on [Twitter](https://twitter.com/dasdom) or [App.net](https://app.net/dasdom).</p>

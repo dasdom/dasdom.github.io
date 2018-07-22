@@ -1,0 +1,97 @@
+---
+layout: post
+title: 'How To Build An App Without Interface Builder - Part 4: DataSource'
+date: 2015-08-17 17:57:09.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- HowTo
+tags:
+- Code
+- Interface Builder
+- UITableView
+- UITableViewDataSource
+- View Controller
+---
+<p>As mentioned in <a href="http://swiftandpainless.com/how-to-build-an-app-without-interface-builder-part-3-a-decision/">Part 3</a> we will proceed this series without using TDD.</p>
+<p>In this part we will add a data source for the table view and we will configure it to show some dummy cell to make sure we have set up everything correctly.</p>
+<p>So, we already have a view controller, <span class="lang:swift decode:true  crayon-inline ">BirthdaysListViewController</span>, which is a subclass of <span class="lang:swift decode:true  crayon-inline ">UITableViewController</span>. Xcode automatically adds some methods to start with. But we want to start with a blank slate. So delete everything except the following code:</p>
+<pre class="lang:swift decode:true ">import UIKit
+
+class BirthdaysListViewController: UITableViewController {
+
+}</pre>
+<p>Now let's make sure this view controller is loaded when the app starts. Add the following code within the class <span class="lang:swift decode:true  crayon-inline ">BirthdaysListViewController</span>:</p>
+<pre class="lang:swift decode:true ">override func viewDidLoad() {
+  view.backgroundColor = .redColor()
+}</pre>
+<!--more-->
+<p>You're probably wondering why there is no <span class="lang:swift decode:true  crayon-inline ">super.viewDidLoad()</span> in this method. The reason is, it's not mentioned in the documentation. To see the documentation of a method, option click on it. You would see something like this:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Screen-Shot-2015-08-16-at-09.40.41.png"><img src="{{ site.baseurl }}/assets/Screen-Shot-2015-08-16-at-09.40.41.png" alt="Screen Shot 2015-08-16 at 09.40.41" width="553" height="264" class="aligncenter size-full wp-image-883" /></a></p>
+<p>If you have to call super, this is mentioned in the documentation. For example in case of <span class="lang:swift decode:true  crayon-inline ">viewWillAppear(_:)</span> the documentation reads:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Screen-Shot-2015-08-16-at-09.43.13.png"><img src="{{ site.baseurl }}/assets/Screen-Shot-2015-08-16-at-09.43.13.png" alt="Screen Shot 2015-08-16 at 09.43.13" width="516" height="171" class="aligncenter size-full wp-image-884" /></a></p>
+<p>The last sentence:</p>
+<blockquote><p>
+  If you override this method, you must call <code>super</code> at some point in your implementation.
+</p></blockquote>
+<p>Build and run (<strong>⌘R</strong>). You should see something like this:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Simulator-Screen-Shot-24.07.2015-18.23.45.png"><img src="{{ site.baseurl }}/assets/Simulator-Screen-Shot-24.07.2015-18.23.45-200x300.png" alt="Simulator Screen Shot 24.07.2015 18.23.45" width="200" height="300" class="aligncenter size-medium wp-image-781" /></a></p>
+<p>Uh, that is not what we expected. We set the background color to red. But the view that is presented on screen is still yellow.</p>
+<p>The reason for this is, that we are loading the wrong view. Remember, we are not using Interface Builder. So we have to write code that tells our app what view controller should be loaded when the app starts.</p>
+<p>Open <strong>AppDelegate.swift</strong> and change the line:</p>
+<pre class="lang:swift decode:true ">window!.rootViewController = ViewController()
+</pre>
+<p>to</p>
+<pre class="lang:swift decode:true ">window!.rootViewController = BirthdaysListViewController()</pre>
+<p>Build and run again. You should see something like this:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Simulator-Screen-Shot-16.08.2015-09.52.44.png"><img src="{{ site.baseurl }}/assets/Simulator-Screen-Shot-16.08.2015-09.52.44-200x300.png" alt="Simulator Screen Shot 16.08.2015 09.52.44" width="200" height="300" class="aligncenter size-medium wp-image-886" /></a></p>
+<p>It worked. We are loading the correct initial view.</p>
+<p>Delete <strong>ViewController.swift</strong> because we won't gonna need it anymore.</p>
+<p>Let's bring some dummy cells on screen to see how this works. Usually the table view controller is also the data source and the delegate of a table view. But this often leads to a massive table view controller. Massive view controller should be avoided because they are hard to maintain and therefore prone to having bugs. In an ideal case the view controller is responsible for bringing the view on screen and for allowing navigation to an other screen.</p>
+<p>Select <strong>File / New / File...</strong>, chose a <strong>iOS / Source / Cocoa Touch Class</strong>, click <strong>Next</strong>, put in the name <strong>BirthdaysListDataProvider</strong>, make it a subclass of <strong>NSObject</strong> and click <strong>Next</strong>. Select to store it in the <strong>BirthdaysList</strong> folder and click <strong>Create</strong>.</p>
+<p>Open <strong>BirthdaysListDataProvider.swift</strong> and change the class definition to:</p>
+<pre class="lang:swift decode:true ">class BirthdaysListDataProvider: NSObject, UITableViewDataSource {
+
+}
+</pre>
+<p><strong>UITableViewDataSource</strong> is a protocol and by adding it in the class declaration you are telling UIKit that this class will conform to this protocol.</p>
+<p>Xcode complains that this class does not conform to the protocol <strong>UITableViewDataSource</strong>:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Screen-Shot-2015-08-16-at-10.19.43.png"><img src="{{ site.baseurl }}/assets/Screen-Shot-2015-08-16-at-10.19.43.png" alt="Screen Shot 2015-08-16 at 10.19.43" width="688" height="162" class="aligncenter size-full wp-image-889" /></a></p>
+<p>The reason is, <strong>UITableViewDataSource</strong> has two required methods: <span class="lang:swift decode:true  crayon-inline ">tableView(_: numberOfRowsInSection:)</span> and <span class="lang:swift decode:true  crayon-inline ">tableView(_:cellForRowAtIndexPath:)</span>.</p>
+<p>Add the following code with in the <strong>BirthdaysListDataProvider</strong> class:</p>
+<pre class="lang:swift decode:true ">func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -&gt; Int {
+  return 10
+}
+
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -&gt; UITableViewCell {
+  let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
+  
+  cell.textLabel?.text = "Row: \(indexPath.row)"
+  
+  return cell
+}</pre>
+<p>We are not finished yet. We need to register the class to use for the table view cell before we can dequeue a reusable cell. This is normally done in Interface Builder by adding a cell to a table view. As we don't use the Interface Builder, we need to do this ourselves. Add the following method at the beginning of the <strong>BirthdaysListDataProvider</strong> class:</p>
+<pre class="lang:swift decode:true ">func registerCellsForTableView(tableView: UITableView) {
+  tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+}</pre>
+<p>And we already have some <a href="https://en.wikipedia.org/wiki/Code_smell">code smell</a>. The string 'Cell' is hard coded at two different places. Let's fix that. Add the private property:</p>
+<pre class="lang:swift decode:true ">private let cellIdentifer = "Cell"
+</pre>
+<p>and change the hard coded strings to use this property.</p>
+<p>Now we need to tell the table view to use our shiny new class as the datasource. Open <strong>BirthdaysListViewController.swift</strong> and add the property:</p>
+<pre class="lang:swift decode:true ">var dataProvider: BirthdaysListDataProvider?</pre>
+<p>To set the data source, add following code at the end of <span class="lang:swift decode:true  crayon-inline ">viewDidLoad()</span>:</p>
+<pre class="lang:swift decode:true ">tableView.dataSource = dataProvider
+
+dataProvider?.registerCellsForTableView(tableView)</pre>
+<p>There is one thing left to do. Open <strong>AppDelegate.swift</strong> and replace the line:</p>
+<pre class="lang:swift decode:true ">window!.rootViewController = BirthdaysListViewController()</pre>
+<p>with the following code:</p>
+<pre class="lang:swift decode:true ">let viewController = BirthdaysListViewController()
+viewController.dataProvider = BirthdaysListDataProvider()
+window!.rootViewController = viewController</pre>
+<p>Build and run. You should see something like this:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Simulator-Screen-Shot-16.08.2015-10.47.44.png"><img src="{{ site.baseurl }}/assets/Simulator-Screen-Shot-16.08.2015-10.47.44-200x300.png" alt="Simulator Screen Shot 16.08.2015 10.47.44" width="200" height="300" class="aligncenter size-medium wp-image-890" /></a></p>
+<p>You can find the code on <a href="https://github.com/dasdom/Birthdays/tree/part4">github</a>.</p>
+<p><a href="http://swiftandpainless.com/how-to-build-an-app-without-interface-builder-part-5-data-model/">Part 5: Data Model</a></p>

@@ -1,0 +1,54 @@
+---
+layout: post
+title: Delegate and Data Source of Collection Views
+date: 2013-12-27 19:23:39.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- Data Source
+- Delegate
+- UICollectionView
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+  robotsmeta: index,follow
+  _wpcom_is_markdown: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>How I split delegate/data source and view controller of <code>UICollectionView</code>s.</p>
+<p>Recently I started to split the view controller of a <code>UICollectionView</code> and its delegate and data source. The delegate and data source are put into the same class which is a subclass of <code>NSObject</code>. In the view controller the collection view is defined within <code>loadView:</code> (I don't like Interface Builder and therefore construct the views in code) and the delegate and data source is set:<br />
+[code language="objc" light="true"]<br />
+- (void)loadView {<br />
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];<br />
+    UIView *contentView = [[UIView alloc] initWithFrame:frame];</p>
+<pre><code>UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+_collectionView = [[UICollectionView alloc] initWithFrame:frame 
+                                     collectionViewLayout:collectionViewFlowLayout];
+
+_collectionView.delegate = self.collectionViewDelegateAndDataSource;
+_collectionView.dataSource = self.collectionViewDelegateAndDataSource;
+
+[contentView addSubview:_collectionView];
+
+self.view = contentView;
+</code></pre>
+<p>}<br />
+[/code]</p>
+<p>(When using <code>UICollectionView</code>s one has to register the classes for the cells before any cell can be created. This is needed because within the cell creation <code>dequeueReusableCellWithReuseIdentifier:forIndexPath:</code> is called. This method dequeues a cell for the given identifier if possible and creates a new cell otherwise. To create a cell the collection view needs to know the class of the cell. That's why one has to register the classes for the cells. I do this normally in loadView.)</p>
+<p>But here comes the drawback of putting the delegate/data source of the collection view into its own class:<br />
+When the delegate and data source isn't the view controller, both, the delegate/data source and the view controller need to know the classes which are used for the cells (the view controller needs to register the cells and the data source needs to populate the cells). This is not clean code because the information is doubled.<br />
+To remove this code doubling I have defined a protocol with one method</p>
+<pre class="lang:objc decode:true ">@protocol DDHRegisterCellsProtocol &amp;lt;NSObject&amp;gt;
+- (void)registerCellsForCollectionView:(UICollectionView*)collectionView;
+@end</pre>
+<p>and require the delegate/data source to conform to this protocol. With this protocol the delegate/data source can register the classes for the cells without the need of a property holding a reference to the collection view. And the view controller doesn't need to know how the cells look like and how they are created. The only thing the view controller has to do is to call the protocol method.</p>
+<p>This looks much better.</p>
+<p>A project demonstrating this can be found on <a href="https://github.com/dasdom/CollectionViewDemo">github</a>. In this demo you can also see how I construct user interfaces without using Interface Builder.</p>

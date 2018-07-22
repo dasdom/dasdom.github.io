@@ -1,0 +1,31 @@
+---
+layout: post
+title: Storyboards and Xibs
+date: 2014-07-30 10:11:34.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- storyboard
+- Xcode
+- xib
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _jetpack_related_posts_cache: a:1:{s:32:"8f6677c9d6b0f903e98ad32ec61f8deb";a:2:{s:7:"expires";i:1437219800;s:7:"payload";a:3:{i:0;a:1:{s:2:"id";i:563;}i:1;a:1:{s:2:"id";i:81;}i:2;a:1:{s:2:"id";i:589;}}}}
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Since I read the first book about [iPhone development](http://www.amazon.com/iPhone-SDK-Application-Development-Applications/dp/0596154054/ref=sr_1_4?s=books&ie=UTF8&qid=1406706339&sr=1-4) I like to do all my layout in code (except for projects at work where other developers started the project with storyboards).</p>
+<p>Every year I ask myself if I should give Interface Builder (IB) another chance because I see the advantages in speed when setting up the layout. In addition auto layout debugging is what I miss in code. (No, [exerciseAmbiguityInLayout](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIView_Class/UIView/UIView.html#//apple_ref/occ/instm/UIView/exerciseAmbiguityInLayout) does not help. Most of the times I tried it, it did nothing.)</p>
+<p>And with the changes in Xcode 6 (custom views in IB, setting of custom properties, preview, ...) a lot of my complains about the IB seem to be addressed by Apple. </p>
+<p>There is still the context switching, I don't like. But as I heard in a [podcast](https://itunes.apple.com/de/podcast/cocoaradio-06-jonathan-wight/id866902974?i=313477386&l=en&mt=2) recently, there is less context switching when one writes the layout in the xib-storyboard format. This kind of looks like code.</p>
+<p>Then I read a [post by Mike Abdullah](http://mikeabdullah.net/thl-ios7-diary-5-table-section-headers.html) and realize that the UI will always have parts which have be done in code. Or maybe not. Apple is obviously pushing towards IB. For example they removed the empty application template in Xcode 6 beta 4.</p>
+<p>I'm still not sure about that. I'll try to use the Interface Builder more often and see if it fits my needs.</p>

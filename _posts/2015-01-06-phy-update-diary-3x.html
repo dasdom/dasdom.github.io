@@ -1,0 +1,60 @@
+---
+layout: post
+title: 'Phy Update Diary: @3x'
+date: 2015-01-06 10:51:31.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- Update Diary
+tags:
+- '@2x'
+- '@3x'
+- latex
+- Phy
+- script
+- shell
+meta:
+  _edit_last: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>In the Phy Update Diary I'm writing about the process of updating the first App I have ever put into the App Store.</p>
+<p>The formulas in [Phy](https://itunes.apple.com/de/app/phy-physics-formulas-calculator/id325836855?l=en&mt=8) are png images created using LaTeX. I used LaTeX because the formulas then look so good. Here is an example:</p>
+<pre class="lang:tex decode:true ">documentclass{article}
+usepackage{amsmath}
+begin{document}
+pagestyle{empty}
+hoffset = -5cm
+voffset = -4.2cm
+$F = gamma frac{m _1 , m _2}{r ^{2}} , frac{vec r}{| vec r |}$ 
+end{document}</pre>
+<p>creates</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/01/gravitationskraft@3x.png"><img src="{{ site.baseurl }}/assets/gravitationskraft@3x-300x66.png" alt="gravitationskraft@3x" width="300" height="66" class="aligncenter size-medium wp-image-453" /></a></p>
+<p>(Fun fact: While putting together this blog post I realized that his formula is wrong. There is a vector sign missing on the `F`. :))</p>
+<p>I already have the pngs for the formulas in the current version but for the update I need to have in addition @3x version for the iPhone 6 and the iPhone 6+. When Apple released the iPhone 4 with its Retina display I had the same problem (yes, Phy is that old). To create the @2x (and now the @3x images) I used a shell script that takes all `.tex` files and creates images with different resolutions (essentially it just changes the DPI of the output).</p>
+<p>Here is the script to generate the @2x and the @3x images an copy them to the project folder.</p>
+<pre class="lang:sh decode:true ">#!/bin/bash
+
+while [ -n "$1" ] 
+do
+        name1=$1
+        name2=${name1/'.tex'}
+        echo $name2
+        latex $name2
+        dvipng -D 300 $name2.dvi -o $name2@2x.png
+        cp $name2@2x.png ~/Documents/development/Phy/Phy/Resources/images/
+        rm $name2.div $name2.log $name2.log $name2.aux
+
+        dvipng -D 450 $name2.dvi -o $name2@3x.png
+        cp $name2@3x.png ~/Documents/development/Phy/Phy/Resources/images/
+        rm $name2.div $name2.log $name2.log $name2.aux
+
+        shift
+done
+</pre>
+<p>If you have comments or questions about this post, ping me on App.net or Twitter.</p>

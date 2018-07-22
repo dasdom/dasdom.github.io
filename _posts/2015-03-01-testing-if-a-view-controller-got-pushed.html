@@ -1,0 +1,51 @@
+---
+layout: post
+title: Testing If A View Controller Got Pushed
+date: 2015-03-01 15:23:14.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- TDD
+tags:
+- TDD
+- Testing
+- UINavigationController
+- Unit Tests
+meta:
+  _edit_last: '1'
+  robotsmeta: index,follow
+  _wpcom_is_markdown: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>I want to write a unit test that tests if a view controller is pushed onto the navigation stack. Here is the solution I came up with:</p>
+<pre class="lang:swift decode:true ">//
+func testViewControllerGotPushedStoryboardVersion() {
+    class MockNavigationController: UINavigationController {
+        var pushedViewController: UIViewController?
+        private override func pushViewController(viewController: UIViewController, animated: Bool) {
+            pushedViewController = viewController
+            super.pushViewController(viewController, animated: animated)
+        }
+    }
+    
+    let viewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewControllerWithIdentifier("MasterViewController") as MasterViewController
+    
+    let mockNavigationController = MockNavigationController(rootViewController: viewController)
+    
+    let expectation = expectationWithDescription("should push")
+    viewController.performSegueWithIdentifier("showDetail", sender: nil)
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC*0)), dispatch_get_main_queue()) { () -&gt; Void in
+        XCTAssertTrue(mockNavigationController.pushedViewController is DetailViewController, "")
+        expectation.fulfill()
+    }
+    
+    waitForExpectationsWithTimeout(1, handler: nil)
+}</pre>
+<p>What do you think? Is there a better way to test this?</p>

@@ -1,0 +1,99 @@
+---
+layout: post
+title: Coloring parentheses in a calculation string
+date: 2014-05-11 22:36:50.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- attributed string
+- math
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _syntaxhighlighter_encoded: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Right now I am working on an update for [Phy](https://itunes.apple.com/de/app/phy-physics-formulas-calculator/id325836855?l=en&mt=8).</p>
+<p>One of the things which had to be improved was calculation string in the calculator. As a physicist I often had the problem that is was difficult to keep an overview of all the opening and closing parenthesis. One solution could be to use different types of parenthesis. But this is something I don't like ascetically. Even when I write formulas on paper I only use on pair of parenthesis.</p>
+<p>Another solution could be to use different colors for different pairs of parenthesis. The only problem in the implementation of this solution is, that the parentheses can be nested. So in the example `(1+(2+3))`. The first opening and the last closing parentheses should have the same color and it should be different from the color of the second opening and the first closing parentheses.</p>
+<p>Here is what I wanted to accomplish for a more complicated example:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/05/attributedCalcString.png"><img src="{{ site.baseurl }}/assets/attributedCalcString.png" alt="attributedCalcString" width="414" height="74" class="alignnone size-full wp-image-211" /></a></p>
+<p>I solved this problem by iterating through the string and find the first closing parenthesis. On the way I stored the location of all the opening parentheses in an array. Then, when the first closing parenthesis was found, I have just look for the last opening parenthesis which was stored. This was then removed from the array and a range from the opening to the closing parenthesis is added to another array. This sounds quite complicated but in fact is very easy to do. This is the code I use to create an attributed string to color all pairs of parentheses and the calculation signs. In addition all unmatched opening parentheses are colored in red.</p>
+<pre class="lang:objc decode:true ">- (NSAttributedString*)coloredAttributedStringFromString:(NSString*)string {
+    
+    NSMutableArray *openArray = [NSMutableArray array];
+    
+    NSMutableArray *parenthesesPairsArray = [NSMutableArray array];
+    NSMutableArray *calcSignsRanges = [NSMutableArray array];
+    
+    if (self.calculationSigns) {
+        self.calculationSigns = @[@"/", @"⨯", @"−", @"+"];
+    }
+    if (!self.openingParenthesis) {
+        self.openingParenthesis = @"(";
+    }
+    if (!self.closingParenthesis) {
+        self.closingParenthesis = @")";
+    }
+
+    [string enumerateSubstringsInRange:NSMakeRange(0, string.length)
+                               options:NSStringEnumerationByComposedCharacterSequences
+                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+        
+        if ([self.calculationSigns containsObject:substring]) {
+            [calcSignsRanges addObject:[NSValue valueWithRange:substringRange]];
+        } else if ([substring isEqualToString:self.openingParenthesis]) {
+            [openArray addObject:[NSValue valueWithRange:substringRange]];
+        } else if ([substring isEqualToString:self.closingParenthesis]) {
+            NSValue *openValue = [openArray lastObject];
+            NSRange parenthesesRange;
+            if (openValue) {
+                NSRange openRange = [[openArray lastObject] rangeValue];
+                NSInteger length = substringRange.location-openRange.location;
+                if (length &lt; 1) {
+                    length = 1;
+                }
+                parenthesesRange = NSMakeRange(openRange.location, length);
+                [parenthesesPairsArray addObject:[NSValue valueWithRange:parenthesesRange]];
+                [openArray removeLastObject];
+            }
+        }
+    }];
+    
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:string];
+
+    [openArray enumerateObjectsUsingBlock:^(NSValue *rangeValue, NSUInteger idx, BOOL *stop) {
+        NSRange range = [rangeValue rangeValue];
+        [attributedString addAttribute:NSForegroundColorAttributeName value:(self.unPairedParenthesisColor ?: [UIColor redColor]) range:range];
+    }];
+    
+    NSInteger numberOfColors = [self.parenthesesColors count];
+    [parenthesesPairsArray enumerateObjectsUsingBlock:^(NSValue *rangeValue, NSUInteger idx, BOOL *stop) {
+        UIColor *color = self.parenthesesColors[idx % numberOfColors];
+        NSRange parenthesesRange = [rangeValue rangeValue];
+        NSRange range = NSMakeRange(parenthesesRange.location, 1);
+        [attributedString addAttribute:NSForegroundColorAttributeName value:color range:range];
+        range = NSMakeRange(parenthesesRange.location+parenthesesRange.length, 1);
+        [attributedString addAttribute:NSForegroundColorAttributeName value:color range:range];
+    }];
+    
+    [calcSignsRanges enumerateObjectsUsingBlock:^(NSValue *rangeValue, NSUInteger idx, BOOL *stop) {
+        UIColor *defaultCalcSignColor = [UIColor colorWithRed:0.000 green:0.251 blue:0.502 alpha:1.000];
+        NSRange range = [rangeValue rangeValue];
+        [attributedString addAttribute:NSForegroundColorAttributeName value:(self.calculationSignsColor ?: defaultCalcSignColor) range:range];
+    }];
+    
+    [attributedString addAttribute:NSFontAttributeName value:[UIFont fontWithName:@"Menlo" size:13.0f] range:NSMakeRange(0, attributedString.length)];
+
+    return attributedString;
+}
+</pre>

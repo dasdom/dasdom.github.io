@@ -1,0 +1,40 @@
+---
+layout: post
+title: 'How To Bild An App Without Interface Builder - Part 1: Setup'
+date: 2015-08-03 14:31:31.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- HowTo
+tags:
+- empty project
+- Interface Builder
+- storyboard
+- Xcode
+---
+<p>Back in the days Apple shipped an empty iOS project template with Xcode. With Xcode 5 they removed it to promote the use of storyboards. When you now create an iOS project you always get a storyboard. In this post I'll show you how to remove the storyboard and how to change the AppDelegate to load a view controller using code. A similar approach can also be used to load view controllers with xibs.</p>
+<p><strong>Note:</strong> I'm using Xcode 7 beta 4. But what is shown here should work in Xcode 6 as well.</p>
+<p>Open Xcode and create a new project (<strong>File/New/Project...</strong>), select the <strong>iOS/Single View Application</strong> template and click <strong>Next</strong>. Name the project (I'll use <strong>Birthdays</strong> as a working title), select Swift and check <strong>Include Unit Tests</strong>. Later we will also add UI tests. But at the beginning we want to have fast tests.</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Screen-Shot-2015-07-24-at-17.58.19.png"><img src="{{ site.baseurl }}/assets/Screen-Shot-2015-07-24-at-17.58.19.png" alt="Screen Shot 2015-07-24 at 17.58.19" width="733" height="518" class="aligncenter size-full wp-image-779" /></a></p>
+<p>Click <strong>Next</strong>. Select a place on your hard drive to store the project and click <strong>Create</strong>.</p>
+<!--more-->
+<p>Next you'll remove the storyboard. Select <strong>Main.storyboard</strong> and press <strong>Delete</strong>. In the alert box select <strong>Move to Trash</strong>. Open <strong>Info.plist</strong> and remove the entry with "Main storyboard file base name".</p>
+<p>Build and run. You should see something like this:</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Simulator-Screen-Shot-24.07.2015-18.09.04.png"><img src="{{ site.baseurl }}/assets/Simulator-Screen-Shot-24.07.2015-18.09.04-200x300.png" alt="Simulator Screen Shot 24.07.2015 18.09.04" width="200" height="300" class="aligncenter size-medium wp-image-780" /></a></p>
+<p>If you ever wanted to have an app that only shows a black screen, here you go.</p>
+<p>Now let's bring the view controller's view onto the screen. Open <strong>ViewController.swift</strong> and add the following to the end of <span class="lang:swift decode:true  crayon-inline ">viewDidLoad()</span>:</p>
+<pre class="lang:swift decode:true ">view.backgroundColor = .yellowColor()
+</pre>
+<p>With this code you set the background color of the view controller's view to yellow. I use this a lot when building UIs to see the views and to check if I have mistakes in the layout code. Build and run to make sure that the screen is still <strong>black</strong>. You expect a black screen because you haven't told iOS that it should load the view controllers view onto the screen.</p>
+<p>Let's do exactly that. Open <strong>AppDelegate.swift</strong> and replace the line <span class="lang:swift decode:true  crayon-inline ">var window: UIWindow?</span> with:</p>
+<pre class="lang:swift decode:true ">var window: UIWindow? = UIWindow(frame: UIScreen.mainScreen().bounds)</pre>
+<p>to initialize a window.</p>
+<p>Within <span class="lang:swift decode:true  crayon-inline ">application(_:didFinishLaunchingWithOptions:)</span> add the following code before the return statement:</p>
+<pre class="lang:swift decode:true ">window!.rootViewController = ViewController()
+window!.makeKeyAndVisible()</pre>
+<p>With this you set the rootViewController of the window and make the window the key window and tell it to show itself. Build and run. You should see this:</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/08/Simulator-Screen-Shot-24.07.2015-18.23.45.png"><img src="{{ site.baseurl }}/assets/Simulator-Screen-Shot-24.07.2015-18.23.45-200x300.png" alt="Simulator Screen Shot 24.07.2015 18.23.45" width="200" height="300" class="aligncenter size-medium wp-image-781" /></a></p>
+<p>Congratulations! You have build your first app that doesn't use the Interface Builder.</p>
+<p>If you enjoyed this post, then make sure you subscribe to my <a href="http://swiftandpainless.com/feed">feed</a>.</p>
+<p><a href="http://swiftandpainless.com/how-to-bild-an-app-without-interface-builder-part-2-sketches-structure-tests/">Part 1: Sketches</a></p>

@@ -1,0 +1,55 @@
+---
+layout: post
+title: 'Phy Update Diary: Fill The Realm Database'
+date: 2015-01-03 20:42:37.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- Update Diary
+tags:
+- command line
+- Mac
+- realm
+- Swift
+- update diary
+meta:
+  _edit_last: '1'
+  _jetpack_related_posts_cache: a:0:{}
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>As described in the previous post I had to get the data out of the plist which is used in the current version of Phy and put it into the Realm database. As the structure of the plist reflects the very limited knowledge I had when I started with iPhone Os development in 2009, I first had to remove all the unneeded information. To do that I wrote a Swift script which opens the plist as a dictionary and walks through the data and puts the needed information into another much cleaner plist.</p>
+<p>This cleaner plist represents the data of the app and a starting point for future additions of formulas.</p>
+<p>But within the app I wanted to use Realm as the database. So I needed to find a way to get the data out of the plist into the realm db.</p>
+<p>First I thought I could use a Swift Playground. So I added Realm to the frameworks path of Xcode. This allowed to import Realm but whenever I tried to add a Realm object to the Playground, it stopped executing. Realm needs libc++. So maybe this lib is missing in Playgrounds. I don't know and I don't want to figure out at the moment.</p>
+<p>So the next idea was to use a command line tool to fill it. And this is what I did. I added the OS X Realm framework and the realm model from the iOS App to the Mac app and implemented the code to fill the Realm database. This is the function that does the main work:</p>
+<pre class="lang:swift decode:true ">func fillRealmDBFrom(array: [[String:AnyObject]], categoryName: String) -&gt; RLMArray {
+    
+    var resultArray = RLMArray(objectClassName: Object.className())
+    
+    for dictionary in array {
+        let object = Object()
+
+        object.name = dictionary["name"] as? String ?? ""
+        
+        object.image = dictionary["image"] as? String ?? ""
+        
+        if let details = dictionary["details"] as? [[String:AnyObject]] {
+            object.details = fillRealmDBFrom(details, object.name)
+        }
+        
+        object.categoryName = categoryName
+        
+        resultArray.addObject(object)
+    }
+    
+    return resultArray
+}
+</pre>
+<p>It's still not perfect because I have to clean the build folder after each run otherwise the Mac app doesn't find the Realm framework. But for me it's good enough because I'll have to run the Mac app only a few times when I add new formulas.</p>
+<p>**Update:** As Tammo suggested in his comment I removed the `if` statement in favour or the `??` operator.</p>

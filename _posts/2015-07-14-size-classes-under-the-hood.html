@@ -1,0 +1,39 @@
+---
+layout: post
+title: Size Classes Under The Hood
+date: 2015-07-14 20:10:13.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- Tips
+tags:
+- Code
+- Size Classes
+- storyboard
+- Under The Hood
+meta:
+  title: Size Classes Under The Hood
+  robotsmeta: index,follow
+  description: What happens when a view isn't added to a specific size class? How
+    does iOS hide this view?
+  _edit_last: '1'
+  _jetpack_related_posts_cache: a:1:{s:32:"8f6677c9d6b0f903e98ad32ec61f8deb";a:2:{s:7:"expires";i:1437262780;s:7:"payload";a:3:{i:0;a:1:{s:2:"id";i:589;}i:1;a:1:{s:2:"id";i:563;}i:2;a:1:{s:2:"id";i:215;}}}}
+  _wpcom_is_markdown: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>I wondered what happens when a view is not present in a specific size class in a storyboard because I want to mimic this behavior in code.</p>
+<p>I've created a test project and added two labels to the storyboard scene. <span class="lang:swift decode:true  crayon-inline ">labelOne</span> is in the size classes Any-Any. <span class="lang:swift decode:true  crayon-inline ">labelTwo</span> is only in the size class Regular-Compact.</p>
+<p>To see what's going on I added outlets and the following print commands in <span class="lang:swift decode:true  crayon-inline ">viewDidLoad</span>:</p>
+<pre class="lang:swift decode:true ">print("(labelOne.hidden) (labelOne.alpha) (labelOne.superview)")
+print("(labelTwo.hidden) (labelTwo.alpha) (labelTwo.superview)")</pre>
+<p>The debug output is:</p>
+<pre class="lang:sh decode:true ">false 1.0 Optional(&lt;UIView: 0x796e3740; frame = (0 0; 320 480); autoresize = W+H; layer = &lt;CALayer: 0x796e3910&gt;&gt;)
+false 1.0 nil</pre>
+<p>This means, the <span class="lang:swift decode:true  crayon-inline ">labelTwo</span> isn't shown when running for example on iPhone 4s because it is not added to the view. But the label is not nil even though it's a weak reference. I assume the reason behind that is that the storyboard holds a reference to the label.</p>
+<p>I will try to mimic this behavior when creating code that uses size classes.</p>

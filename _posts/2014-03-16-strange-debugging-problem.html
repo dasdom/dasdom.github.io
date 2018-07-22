@@ -1,0 +1,39 @@
+---
+layout: post
+title: Strange debugging problem
+date: 2014-03-16 14:59:33.000000000 +01:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- Breakpoint
+- Debugging
+- duplicate symbol
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _syntaxhighlighter_encoded: '1'
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Recently I had to take over a project a ex-collegue had nearly finished before he left. During debugging I came across a strange problem. The debugger only stopped at some of my breakpoints. In some classes the breakpoints have been useless. First I thought that the code at these breakpoints did not get executed. But when I added NSLog statements in the line before or after the breakpoint the log worked.</p>
+<p>It took a while until I figured out that the implementation file was not added to the target I was debugging. But why did this code then even got executed (as I knew because of the NSLog statements)? And why did it even compile.</p>
+<p>After I added the file to the target I got the compiler error<br />
+`duplicate symbol _OBJC_IVAR_$...`. </p>
+<p>What the...?!?</p>
+<p>A little internet search helped me to find the underlying problem. The ex-collegue had five times imported the implementation file instead of the interface file. So in five classes there where</p>
+<p>[code language="objc"]<br />
+#import &quot;MyAwesomeClasse.m&quot;<br />
+[/code]</p>
+<p>instead of</p>
+<p>[code language="objc"]<br />
+#import &quot;MyAwesomeClasse.h&quot;<br />
+[/code]</p>
+<p>In total it took me nearly two hours to find and fix the bug. I hope this post will save you from wasting this time.</p>

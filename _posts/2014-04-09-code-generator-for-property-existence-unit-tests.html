@@ -1,0 +1,66 @@
+---
+layout: post
+title: Code generator for property existence unit tests
+date: 2014-04-09 10:25:12.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- code generator
+- XCTest
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _syntaxhighlighter_encoded: '1'
+  _wp_old_slug: boiler-plate-code-for-testing
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Sometimes I write tests to ensure that there are all the properties I expect in a class. The test looks like this:</p>
+<p>[code language="objc"]<br />
+#import &lt;XCTest/XCTest.h&gt;<br />
+#import &lt;objc/runtime.h&gt;<br />
+#import &quot;MyClass.h&quot;<br />
+...<br />
+- (void)testThatMyClassHasNameProperty {<br />
+    objc_property_t nameProperty = class_getProperty([MyClass class], &quot;name&quot;);<br />
+    XCTAssertTrue(nameProperty != NULL, @&quot;MyClass should have a name property.&quot;);<br />
+}<br />
+[/code]</p>
+<p>All these tests look the same. What a great opportunity to write a script to create those tests. Here it is:</p>
+<p>[code language="perl"]<br />
+#!/usr/bin/perl -w</p>
+<p>use strict;</p>
+<p>if (not defined($ARGV[1])) {<br />
+    die &quot;usage: $0 &lt;class name&gt; &lt;file with property names&gt;n&quot;;<br />
+}</p>
+<p>open(PROP, $ARGV[1]) || die &quot;could not open property names file: $!n&quot;;</p>
+<p>my $className = $ARGV[0];<br />
+while (defined(my $line = &lt;PROP&gt;)) {<br />
+    chomp($line);<br />
+    print &quot;- (void)testThat&quot; . $className . &quot;Has&quot;;<br />
+    print ucfirst($line) . &quot;Property {n&quot;;</p>
+<p>    print &quot;tobjc_property_t &quot; . $line . &quot;Property = class_getProperty([&quot;;<br />
+    print $className . &quot; class], &quot;&quot; . $line . &quot;&quot;);n&quot;;</p>
+<p>    print &quot;tXCTAssertTrue(&quot; . $line . &quot;Property != NULL, @&quot;&quot;;<br />
+    print $className . &quot; should have a &quot; . $line . &quot; property.&quot;);n}n&quot;<br />
+}<br />
+[/code]</p>
+<p>To print the tests onto the Terminal call the script:<br />
+[code]<br />
+perl createPropertyTests.pl MyClass properties.txt<br />
+[/code]</p>
+<p>The `properties.txt` file is expected to look like this:<br />
+[code]<br />
+name<br />
+date<br />
+age<br />
+[/code]</p>
+<p>Any comments? Get in touch with me at [@dasdom](https://alpha.app.net/dasdom).</p>

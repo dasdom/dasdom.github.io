@@ -1,0 +1,307 @@
+---
+layout: post
+title: Ultralight View Controllers without Interface Builder
+date: 2014-05-23 12:00:42.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- experiment
+- light view controllers
+- MVC
+- MVVM
+meta:
+  _edit_last: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+  _syntaxhighlighter_encoded: '1'
+  _jetpack_related_posts_cache: a:1:{s:32:"8f6677c9d6b0f903e98ad32ec61f8deb";a:2:{s:7:"expires";i:1437196873;s:7:"payload";a:3:{i:0;a:1:{s:2:"id";i:100;}i:1;a:1:{s:2:"id";i:300;}i:2;a:1:{s:2:"id";i:563;}}}}
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Since I read the [first issue of objc.io](http://www.objc.io/issue-1/) I try to make my view controllers as light weight as possible.</p>
+<p>A month ago [Chris Eidhof](https://twitter.com/chriseidhof) wrote a [great blogpost](http://chris.eidhof.nl/posts/intentions.html) about his experiment with Ultralight View Controllers using [Intentions](http://bendyworks.com/geekville/articles/2014/2/single-responsibility-principle-ios). Chris uses a storyboard and adds a model container and intentions to it.</p>
+<p>Personally I don't like the Interface Builder and avoid it when ever I can. To understand what Chris did and to decide whether I like it I had to change [the example code](https://github.com/chriseidhof/intentions) and get rid of the Interface Builder. You can download the project from [github](https://github.com/dasdom/intentions).</p>
+<p>> **tl;dr**: I first tired to but everything what was in the storyboard into a view class. But this resulted in a bloated init method for the view. I then realized that the view controller should be responsible for connecting all the intentions and hold a reverence to the model container. </p>
+<p>###AppDelegate</p>
+<p>Without a storyboard we have to create the window and make it key. And we have to define the rootViewController of the window.</p>
+<pre class="lang:objc decode:true ">#import "AppDelegate.h"
+#import "ViewController.h"
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application 
+        didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+
+    ViewController *viewController = [[ViewController alloc] init];
+    self.window.rootViewController = viewController;
+    
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    return YES;
+}
+
+@end</pre>
+<p>Nothing magical here.</p>
+<p>##First Try</p>
+<p>###View</p>
+<p>As the storyboard is gone we need a class for the view. In Chris' example the storyboard scene for the view controller included all the needed intentions and the model container. The intentions react on changes in the user interface. Therefore in this example I'll put them into the view class. I'm not really happy with this approach but I think this is comparable to putting them into the scene of the view controller in the storyboard. (Is this true? Is this comparable? Should they be in a separate class and be connected in the view controller? Let me know what you think.)</p>
+<pre class="lang:objc decode:true " title="View.h">//  View.h
+
+#import &lt;UIKit/UIKit.h&gt;
+#import "ModelContainer.h"
+
+@interface View : UIView
+@property (nonatomic, strong) ModelContainer *modelContainer;
+@end</pre>
+<p>In the implementation we fist have to create the model container and than add all the UI elements which have been in the storyboard.</p>
+<pre class="lang:objc decode:true " title="View.m">
+@implementation View
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        // ModelContainer
+        _modelContainer = [[ModelContainer alloc] init];
+        
+        // UI
+        _textField = [[UITextField alloc] init];
+        _textField.translatesAutoresizingMaskIntoConstraints = NO;
+        _textField.borderStyle = UITextBorderStyleRoundedRect;
+        [self addSubview:_textField];
+        
+        _reverseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _reverseButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [_reverseButton setTitle:@"Reverse" forState:UIControlStateNormal];
+        [self addSubview:_reverseButton];
+        
+        _uppercaseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _uppercaseButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [_uppercaseButton setTitle:@"Uppercase" forState:UIControlStateNormal];
+        [self addSubview:_uppercaseButton];
+        
+        _label = [[UILabel alloc] init];
+        _label.translatesAutoresizingMaskIntoConstraints = NO;
+        _label.text = @"Label";
+        [self addSubview:_label];
+        
+        NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(_textField, _reverseButton, 
+                                                                       _uppercaseButton, _label);
+        [self addConstraints:[NSLayoutConstraint 
+                              constraintsWithVisualFormat:@"|-20-[_textField(==_label)]-20-|" 
+                                                  options:kNilOptions 
+                                                  metrics:nil 
+                                                    views:viewsDictionary]];
+        
+        [self addConstraints:[NSLayoutConstraint 
+                              constraintsWithVisualFormat:@"V:|-40-[_textField]-20-[_reverseButton(40)]-20-[_label(==30)]" 
+                                                  options:NSLayoutFormatAlignAllLeft 
+                                                  metrics:nil 
+                                                    views:viewsDictionary]];
+
+        [self addConstraints:[NSLayoutConstraint 
+                              constraintsWithVisualFormat:@"V:[_textField]-20-[_uppercaseButton(==_reverseButton)]" 
+                                                  options:NSLayoutFormatAlignAllRight 
+                                                  metrics:nil 
+                                                    views:viewsDictionary]];
+</pre>
+<p>Now we need all the intentions. I have added init methods to the intentions to make the connections which have previously been made in the storyboard.</p>
+<pre class="lang:objc decode:true " title="View.m">
+
+        // Intentions
+        _reverseIntention = [[ReverseIntention alloc] initWithModelContainer:_modelContainer 
+                                                                modelKeyPath:@"name" 
+                                                                   textField:_textField];
+
+        _uppercaseIntention = [[UppercaseIntention alloc] initWithModelContainer:_modelContainer 
+                                                                    modelKeyPath:@"name" 
+                                                                       textField:_textField];
+
+        _dismissOnEnterIntention = [[DismissOnEnterIntention alloc] init];
+       
+        _observeIntentionForTextField = [[ObserveIntention alloc] initWithSource:_modelContainer 
+                                                                   sourceKeyPath:@"model.name" 
+                                                                          target:_textField 
+                                                                   targetKeyPath:@"text"];
+
+        _observeIntentionForLabel = [[ObserveIntention alloc] initWithSource:_modelContainer 
+                                                               sourceKeyPath:@"model.name" 
+                                                                      target:_label 
+                                                               targetKeyPath:@"text"];
+        
+        [_reverseButton addTarget:_reverseIntention 
+                           action:@selector(reverse) 
+                 forControlEvents:UIControlEventTouchUpInside];
+
+        [_uppercaseButton addTarget:_uppercaseIntention 
+                             action:@selector(capitalize) 
+                   forControlEvents:UIControlEventTouchUpInside];
+        
+        _textField.delegate = _dismissOnEnterIntention;
+    }
+    return self;
+}
+
+@end
+</pre>
+<p>###ViewController</p>
+<p>The view controller has to create a view and assign it to  <span class="lang:objc decode:true  crayon-inline ">self.view</span> in  <span class="lang:objc decode:true  crayon-inline ">loadView</span>. I have moved the creation of the person instance and the assignment to the model controller also into  <span class="lang:objc decode:true  crayon-inline ">loadView</span>. We could leave it in  <span class="lang:objc decode:true  crayon-inline ">viewDidLoad</span> but then we needed two methods in the view controller instead of one which I think would result in more weight.</p>
+<pre class="lang:objc decode:true ">#import "ViewController.h"
+#import "ModelContainer.h"
+#import "Person.h"
+#import "View.h"
+
+@interface ViewController ()
+
+@property (strong, nonatomic) ModelContainer* modelContainer;
+
+@end
+
+@implementation ViewController
+
+- (void)loadView {
+    View *contentView = [[View alloc] init];
+
+    self.modelContainer = contentView.modelContainer;
+    
+    Person *person = [Person new];
+    person.name = @"Dominik";
+    self.modelContainer.model = person;
+    
+    self.view = contentView;
+}
+
+@end</pre>
+<p>###Code smell</p>
+<p>In this example the cost for the ultralight view controller is a kind of heavy view class. Especially the model container in the view bothers me. We could get rid of the model container in the view by creating it in the  <span class="lang:objc decode:true  crayon-inline ">loadView</span> method of the view controller. But in this case the init method of the view should have it as a parameter because we need to make the connections to the intentions.</p>
+<p>Discussing this example I realized that I have no idea how the Interface Builder fits into the Model View Controller pattern. Do the objects added to a scene in the storyboard belong to the view or to the view controller? Maybe both... So this is more like Model-View-ViewModel without the ViewModel.</p>
+<p>(I not even sure if my approach is comparable to what Chris did in the storyboard.)</p>
+<p>##Second Try</p>
+<p>Seeing the code in one place this seems wrong to me. I think the intentions should be properties of the view controller. They should be created in <span class="lang:objc decode:true  crayon-inline ">viewDidLoad</span> and connected to the UI elements of the view.</p>
+<p>So the view controller implementation would look like this:</p>
+<pre class="lang:objc decode:true " title="ViewController2.m">//
+//  ViewController2.m
+//  Intentions
+//
+//  Created by Dominik Hauser on 23.05.14.
+//  Copyright (c) 2014 Dominik Hauser. All rights reserved.
+//
+
+#import "ViewController2.h"
+#import "ModelContainer.h"
+#import "Person.h"
+#import "View2.h"
+
+#import "ReverseIntention.h"
+#import "UppercaseIntention.h"
+#import "DismissOnEnterIntention.h"
+#import "ObserveIntention.h"
+
+@interface ViewController2 ()
+@property (strong, nonatomic) ModelContainer* modelContainer;
+
+@property (nonatomic, strong) ReverseIntention *reverseIntention;
+@property (nonatomic, strong) UppercaseIntention *uppercaseIntention;
+@property (nonatomic, strong) DismissOnEnterIntention *dismissOnEnterIntention;
+@property (nonatomic, strong) ObserveIntention *observeIntentionForTextField;
+@property (nonatomic, strong) ObserveIntention *observeIntentionForLabel;
+@end
+
+@implementation ViewController2
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _modelContainer = [[ModelContainer alloc] init];
+    }
+    return self;
+}
+
+- (void)loadView {
+    View2 *contentView = [[View2 alloc] init];
+    
+    Person *person = [Person new];
+    person.name = @"Dominik";
+    self.modelContainer.model = person;
+    
+    self.view = contentView;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.reverseIntention = [[ReverseIntention alloc] initWithModelContainer:self.modelContainer modelKeyPath:@"name" textField:((View2*)self.view).textField];
+    _uppercaseIntention = [[UppercaseIntention alloc] initWithModelContainer:_modelContainer modelKeyPath:@"name" textField:((View2*)self.view).textField];
+    _dismissOnEnterIntention = [[DismissOnEnterIntention alloc] init];
+    _observeIntentionForTextField = [[ObserveIntention alloc] initWithSource:_modelContainer sourceKeyPath:@"model.name" target:((View2*)self.view).textField targetKeyPath:@"text"];
+    _observeIntentionForLabel = [[ObserveIntention alloc] initWithSource:_modelContainer sourceKeyPath:@"model.name" target:((View2*)self.view).label targetKeyPath:@"text"];
+    
+    [((View2*)self.view).reverseButton addTarget:_reverseIntention action:@selector(reverse) forControlEvents:UIControlEventTouchUpInside];
+    [((View2*)self.view).uppercaseButton addTarget:_uppercaseIntention action:@selector(capitalize) forControlEvents:UIControlEventTouchUpInside];
+    ((View2*)self.view).textField.delegate = _dismissOnEnterIntention;
+}
+</pre>
+<p>And the view would become:</p>
+<pre class="lang:objc decode:true " title="View2.m">//
+//  View2.m
+//  Intentions
+//
+//  Created by Dominik Hauser on 23.05.14.
+//  Copyright (c) 2014 Dominik Hauser. All rights reserved.
+//
+
+#import "View2.h"
+
+@implementation View2
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.backgroundColor = [UIColor lightGrayColor];
+        
+        // UI
+        _textField = [[UITextField alloc] init];
+        _textField.translatesAutoresizingMaskIntoConstraints = NO;
+        _textField.borderStyle = UITextBorderStyleRoundedRect;
+        [self addSubview:_textField];
+        
+        _reverseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _reverseButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [_reverseButton setTitle:@"Reverse" forState:UIControlStateNormal];
+        [self addSubview:_reverseButton];
+        
+        _uppercaseButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _uppercaseButton.translatesAutoresizingMaskIntoConstraints = NO;
+        [_uppercaseButton setTitle:@"Uppercase" forState:UIControlStateNormal];
+        [self addSubview:_uppercaseButton];
+        
+        _label = [[UILabel alloc] init];
+        _label.translatesAutoresizingMaskIntoConstraints = NO;
+        _label.text = @"Label";
+        [self addSubview:_label];
+        
+        NSDictionary *viewsDictionary = NSDictionaryOfVariableBindings(_textField, _reverseButton, _uppercaseButton, _label);
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-20-[_textField(==_label)]-20-|" options:kNilOptions metrics:nil views:viewsDictionary]];
+        
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[_textField]-20-[_reverseButton(40)]-20-[_label(==30)]" options:NSLayoutFormatAlignAllLeft metrics:nil views:viewsDictionary]];
+        
+        [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[_textField]-20-[_uppercaseButton(==_reverseButton)]" options:NSLayoutFormatAlignAllRight metrics:nil views:viewsDictionary]];
+    }
+    return self;
+}
+
+@end
+</pre>
+<p>This looks much better than my first approach. But the view controller isn't ultra light anymore. I would still call it a light view controller but there seems to be potential to reduce it further. I'll think about it.</p>
+<p>**Update:** For fun I have rewritten the Intentions example in Swift. [Check it out.](https://github.com/dasdom/IntentionsWithSwift)</p>
+<p>In case you have any comments about this you can find me on [App.net](https://alpha.app.net/dasdom) and on [Twitter](https://twitter.com/dasdom).</p>

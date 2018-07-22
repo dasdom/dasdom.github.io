@@ -1,0 +1,52 @@
+---
+layout: post
+title: 'Comment on "Clean table view code" from objc.io #1'
+date: 2014-04-07 10:27:44.000000000 +02:00
+type: post
+published: true
+status: publish
+categories:
+- General
+tags:
+- Comment
+- UITableViewDataSource
+meta:
+  _edit_last: '1'
+  _syntaxhighlighter_encoded: '1'
+  _flattr_post_hidden: '0'
+  _flattr_post_customurl: ''
+author:
+  login: dom
+  email: dominik.hauser@dasdom.de
+  display_name: dom
+  first_name: ''
+  last_name: ''
+---
+<p>Finally I get to read all the great articles of objc.io. Recently I read [Clean table view code](http://www.objc.io/issue-1/table-views.html) (because I want to improve my `UITableView` code) and I have to comment on it, because for me the approach doesn't look that clean.</p>
+<p>In **Bridging the Gap Between Model Objects and Cells** [@floriankugler](https://twitter.com/floriankugler) recommends to put the code, populating the `UITableViewCell` subclass into a category of the cell.</p>
+<p>[code language="objc"]<br />
+@implementation PhotoCell (ConfigureForPhoto)</p>
+<p>- (void)configureForPhoto:(Photo *)photo<br />
+{<br />
+    self.photoTitleLabel.text = photo.name;<br />
+    NSString* date = [self.dateFormatter stringFromDate:photo.creationDate];<br />
+    self.photoDateLabel.text = date;<br />
+}</p>
+<p>@end<br />
+[/code]</p>
+<p>I think this is not a good idea because it puts information about the model into the cell, which belongs to the view layer. Here an example where the problem about this becomes more obvious: </p>
+<p>Let's say we are going to build a client for App.net. Posts in the client are represented in the model layer by `DDHPost` objects. If we use the suggested category approach this would result in something like this:</p>
+<p>[code language="objc"]<br />
+#import &quot;DDHPost.h&quot;</p>
+<p>@implementation DDHPostCell (ConfigureForPost)</p>
+<p>- (void)configureForPost:(DDHPost*)post {<br />
+    self.nameLabel.text = post.userName;<br />
+    self.postLabel.attributedText = [self attributedTextForPost:post];<br />
+    self.postDateLabel.text = post.dateString;</p>
+<p>    [self loadAvatarFromURL:post.avatarURL];<br />
+}</p>
+<p>@end<br />
+[/code]</p>
+<p>Later in the development we realize that it would be better to generate the attributed text for the post after we have downloaded the posts from the API. Therefore we add an `attributedText` property in the model layer. Now we have to change the `DDHPostCell` category (which belongs to the view layer) to reflect this change even though the cell looks exactly the same after this change. **(The advantage in this case is, that we don't have to change the data source of the table view.)**</p>
+<p>I think this conflicts with the Model-View-Controller pattern. I prefer to have a smart table view data source which knows how to deal with the data an the presentation. In fact it already needs to know about the cell and the data object.</p>
+<p>Did I miss something? Please let me know what you think! Get in touch with me at [App.net](https://alpha.app.net/dasdom) or [Twitter](https://twitter.com/dasdom).</p>
