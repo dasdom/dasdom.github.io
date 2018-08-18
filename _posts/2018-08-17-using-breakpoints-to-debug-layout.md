@@ -28,7 +28,7 @@ e [(UIView *)$arg3 setBackgroundColor:[UIColor colorWithHue:($arg3 % 100)/100.0 
 In Xcode 9 the UI looks like this:
 
 {:refdef: style="text-align: center;"}
-l[Adding breakpoint in Xcode]({{ "/assets/2018-08-17-using-breakpoints-2.png" | absolute_url }})
+![Adding breakpoint in Xcode]({{ "/assets/2018-08-17-using-breakpoints-2.png" | absolute_url }})
 {: refdef}
 
 If you now navigate to the login screen, you see something like this:
