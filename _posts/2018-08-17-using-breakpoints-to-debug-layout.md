@@ -28,13 +28,19 @@ e [(UIView *)$arg3 setBackgroundColor:[UIColor colorWithHue:($arg3 % 100)/100.0 
 In Xcode 9 the UI looks like this:
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-08-17-using-breakpoints-2.png" | absolute_url }})
+l[Adding breakpoint in Xcode]({{ "/assets/2018-08-17-using-breakpoints-2.png" | absolute_url }})
 {: refdef}
 
 If you now navigate to the login screen, you see something like this:
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-08-17-using-breakpoints-3.png" | absolute_url }})
+![Colorful debug screen]({{ "/assets/2018-08-17-using-breakpoints-3.png" | absolute_url }})
+{: refdef}
+
+If you geht an error like 'no known method […]', add the Debugger Command at the top `e @import UIKit` (thanks Byaruhanga Franklin):
+
+{:refdef: style="text-align: center;"}
+![Import UIKit]({{ "/assets/2018-08-17-using-breakpoints-4.png" | absolute_url }})
 {: refdef}
 
 That's ... interesting.
@@ -48,7 +54,7 @@ e [[(UIView *)$arg3 layer] setBorderColor:[[UIColor magentaColor] CGColor]]; [[(
 If you navigate to the login screen, you should see something like this:
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-08-17-using-breakpoints-4.png" | absolute_url }})
+![Debug screen with borders]({{ "/assets/2018-08-17-using-breakpoints-5.png" | absolute_url }})
 {: refdef}
 
 Nice! So with these breakpoints you can always visually check the frames of you views without recompiling the app. You can even go one essential step further. You make these breakpoints available in all your projects by ctr-clicking on each breakpoint and selecting 'Move Breakpoint To > User'.
