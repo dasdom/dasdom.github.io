@@ -16,7 +16,7 @@ There is a better alternative. Uber has an open source component called [ios-sna
 The UI I would like to test looks like this:
 
 {:refdef: style="text-align: center;"}
-![The screen to be tested]({{ "/assets/2018-07-22-snapshot-test-1.png" | absolute_url }})
+![The screen to be tested]({{ "/assets/2018-07-22/01.png" | absolute_url }})
 {: refdef}
 
 The UI consists of a label, two text fields and a button.
@@ -39,7 +39,7 @@ carthage update --platform iOS
 
 Carthage will fetch the source code from github and build the framework. When Carthage is finished, drag the framework from the `Carthage/Bild/iOS` folder to **Link Binary with Libraries** build phase of you test target:
 {:refdef: style="text-align: center;"}
-![Add framework]({{ "/assets/2018-07-22-snapshot-test-2.png" | absolute_url }})
+![Add framework]({{ "/assets/2018-07-22/02.png" | absolute_url }})
 {: refdef}
 
 As you can see, the name of the framework is `FBSnapshotTestCase` and not iOSSnapshotTestCase. Facebook was the original author of this framework and Uber hasn't manage to change the name yet.
@@ -53,7 +53,7 @@ Next, add a new run script build phase to the test target. Put in the command
 and add the Input File `$(SRCROOT)/Carthage/Build/iOS/FBSnapshotTestCase.framework`. In Xcode it should look like this:
 
 {:refdef: style="text-align: center;"}
-![Run script phase]({{ "/assets/2018-07-22-snapshot-test-3.png" | absolute_url }})
+![Run script phase]({{ "/assets/2018-07-22/03.png" | absolute_url }})
 {: refdef}
 
 # Configure FBSnapshotTestCase
@@ -70,7 +70,7 @@ FB_REFERENCE_IMAGE_DIR: $(SOURCE_ROOT)/$(PROJECT_NAME)Tests/ReferenceImages
 In Xcode this looks like this:
 
 {:refdef: style="text-align: center;"}
-![Environment variables]({{ "/assets/2018-07-22-snapshot-test-4.png" | absolute_url }})
+![Environment variables]({{ "/assets/2018-07-22/04.png" | absolute_url }})
 {: refdef}
 
 # Create the snapshot
@@ -117,7 +117,7 @@ But how do we know that the snapshot test really works? Easy, let's change the U
 The test fails and there is a new directory with the name `FailureDiffs` in the directory of the test target. In this new directory you can find all diff images of the failing tests. In my case, the diff image looks like this:
 
 {:refdef: style="text-align: center;"}
-![The diff image]({{ "/assets/2018-07-22-snapshot-test-5.png" | absolute_url }})
+![The diff image]({{ "/assets/2018-07-22/05.png" | absolute_url }})
 {: refdef}
 
 Awesome! With this image it should be easy to find the change in the UI that made the test fail.

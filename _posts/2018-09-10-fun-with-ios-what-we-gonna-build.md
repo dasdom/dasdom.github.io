@@ -1,15 +1,17 @@
 ---
 layout: post
-title: "Without Interface Builder I: What we're going to build"
+title: "Fun with iOS (1): What we're going to build"
 date: 2018-09-10
 categories: without ib
 ---
+
+You learn best, when you have fun. So let's build a fun app and learn something on the way.
 
 I prefer doing the user interface of iOS apps in code. From all the tutorials and blog posts I have seen, this is rather uncommon. Most developers seem to like Interface Builder. This post series is not about the pros and cons. I've discussed my reasons to do the user interface in code in [a blog posts a few years ago]({{ site.baseurl }}/why-i-still-dont-like-the-interface-builder/).
 
 This blog post series is about *how* to build apps without using Interface Builder. In my opinion every iOS developer should be able to do the user interface in code **and** with Interface Builder.
 
-So, in this series we will try to build an app as I think it should be build. This means, there will be tests. There will be no Interface Builder. And we will be allowed to make errors on the way. We even might build helper tools to speed up the development or debugging. We will see.
+So, in this series we will build an app as I think it should be build. This means, there will be tests. There will be no Interface Builder. And we will be allowed to make errors on the way. We even might build helper tools to speed up the development or debugging. We will see.
 
 ## What we are going to build
 

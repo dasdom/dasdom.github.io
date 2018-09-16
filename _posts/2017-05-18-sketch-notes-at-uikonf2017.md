@@ -19,7 +19,7 @@ And here are the notes together with the links to the videos. Have fun!
 [Cate Huston](https://twitter.com/catehstn)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-1.png" | absolute_url }})
+![]({{ "/assets/2017-05-18/01.png" | absolute_url }})
 {: refdef}
 
 ---
@@ -32,7 +32,7 @@ And here are the notes together with the links to the videos. Have fun!
 [Marciej Piotrowski](https://twitter.com/paciej00)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-2.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/02.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -45,7 +45,7 @@ And here are the notes together with the links to the videos. Have fun!
 [Marcel Weiher](https://twitter.com/mpweiher)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-3.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/03.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -58,7 +58,7 @@ And here are the notes together with the links to the videos. Have fun!
 [Thomas Visser](https://mobile.twitter.com/thomvis)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-4.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/04.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -71,7 +71,7 @@ And here are the notes together with the links to the videos. Have fun!
 [Frank Rausch](https://mobile.twitter.com/frankrausch)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-5.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/05.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -95,7 +95,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Harry Tormey](https://twitter.com/htormey)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-6.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/06.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -108,7 +108,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Rob Napier](https://mobile.twitter.com/cocoaphony)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-7.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/07.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -121,7 +121,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [TJ Usiyan](https://mobile.twitter.com/griotspeak)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-8.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/08.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -134,7 +134,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Gwen Weston](https://mobile.twitter.com/purpleyay)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-9.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/09.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -147,7 +147,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Francisco Diaz](https://mobile.twitter.com/fco_diaz)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-10.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/10.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -160,7 +160,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Martijn Walraven](https://mobile.twitter.com/martijnwalraven)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-11.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/11.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -173,7 +173,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Olivier Halligon](https://mobile.twitter.com/aligatr)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-12.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/12.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -186,7 +186,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Sarah E Olson](https://mobile.twitter.com/saraheolson)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-13.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/13.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -199,7 +199,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Brandon Williams](https://mobile.twitter.com/mbrandonw) & [Lisa Luo](https://mobile.twitter.com/luoser)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-14.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/14.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -212,7 +212,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Mischa Hildebrand](https://mobile.twitter.com/DerHildebrand)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-15.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/15.jpg" | absolute_url }})
 {: refdef}
 
 ---
@@ -225,7 +225,7 @@ Unfortunately I stopped doing sketch notes during the talk because I didn't get 
 [Sommer Panage](https://twitter.com/sommer)
 
 {:refdef: style="text-align: center;"}
-![]({{ "/assets/2017-05-18-sketch-notes-at-uikonf2017-16.jpg" | absolute_url }})
+![]({{ "/assets/2017-05-18/16.jpg" | absolute_url }})
 {: refdef}
 
 ---

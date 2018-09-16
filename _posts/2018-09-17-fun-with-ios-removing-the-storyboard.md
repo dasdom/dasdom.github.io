@@ -1,14 +1,14 @@
 ---
 layout: post
-title: "Without Interface Builder II: Removing the Storyboard"
+title: "Fun with iOS (2): Removing the Storyboard"
 date: 2018-09-17
 categories: without ib
 ---
 
-When you create a new project in Xcode, it comes with a storyboard. The storyboards handles a few things necessary to bring the initial view controller on screen. In the view debugger a plain Single View Application looks like this:
+When you create a new project in Xcode, it comes with a storyboard. The storyboard handles a few things necessary to bring the initial view controller on screen. In the view debugger a plain Single View Application looks like this:
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-09-01-removing-the-storyboard-01.png" | absolute_url }})
+![]({{ "/assets/2018-09-17/01.png" | absolute_url }})
 {:refdef}
 
 So there is a window, a view controller and a view. The window contains the view controller and the view controller contains the view. So the storyboard (or the code that loads it) is responsible to create a window and set the root view controller. But why is there a window at all? Couldn't we just put a view controller on screen?
@@ -17,14 +17,12 @@ The answer can be found [in the documentation](https://developer.apple.com/libra
 
 > In addition to hosting views, windows work with the UIApplication object to deliver events to your views and view controllers.
 
-This means, when we want to build our app without using Interface Builder, we need to provide a window and set the root view controller. Let's do exactly that.
+This means, when we want to build our app without using Interface Builder, we need to provide a window and set the root view controller. Let's do exactly that. Create a new project using the Single View Application template.  I call the project SimpleApp but you sure find a better name. :)
 
-Create a new project using the Single View Application template. This will be the project for the geofence application we are going to build in this blog series. I call the project Fency but you sure find a better name. :)
-
-First remove the storyboard in the project navigator. Then remove the name of the storyboard in the General tab of the target settings.
+First, remove the storyboard in the project navigator. Then remove the name of the storyboard in the General tab of the target settings.
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-09-01-removing-the-storyboard-02.png" | absolute_url }})
+![]({{ "/assets/2018-09-17/02.png" | absolute_url }})
 {:refdef}
 
 We have now completely removed the storyboard from the project. When we build and run and inspect the app again in the view debugger nothing is shown. There is nothing to see here. 
@@ -60,7 +58,7 @@ There is an additional line: `window?.makeKeyAndVisible()`. With this call we te
 We are nearly finished. There is only one thing left to do. If we build and run the app in the current state again the view debugger shows that the view of the view controller is transparent. 
 
 {:refdef: style="text-align: center;"}
-![Login screen]({{ "/assets/2018-09-01-removing-the-storyboard-03.png" | absolute_url }})
+![]({{ "/assets/2018-09-17/03.png" | absolute_url }})
 {:refdef}
 
 The reason is that `.clear` is the default `backgroundColor` for `UIView`s. But when we add a view controller to a storyboard, the background color of the view in the view controller is set to `.white`.
@@ -83,5 +81,4 @@ Done! We have successfully removed the storyboard from the project. It's not tha
 
 And we are good to go.
 
- 
 If you have any feedback please ping be on [Twitter](https://twitter.com/dasdom).
