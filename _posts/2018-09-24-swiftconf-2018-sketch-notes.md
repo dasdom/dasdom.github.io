@@ -147,7 +147,7 @@ And it's a good way to give feedback to the speaker.
 ---
 ---
 
-To the speakers: If you want my to not mention your talk, let me know.
+To the speakers: If you want me to not mention your talk, let me know.
 
 ---
 ---
