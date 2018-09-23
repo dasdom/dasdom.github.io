@@ -5,6 +5,10 @@ categories: sketch notes
 title: "SwiftConf 2018 - Sketch Notes"
 ---
 
+This year I was able to attend only one conference. And this conference was [SwiftConf](https://swiftconf.com/). I do sketch notes to keep concentrated while listening. I'm not good at this but nevertheless it helps me a lot to recall the talk later.
+
+And it's a good way to give feedback to the speaker.
+
 # Day 1
 
 ## Keynote – Stabilizing your ABI
