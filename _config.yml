@@ -27,6 +27,9 @@ markdown: kramdown
 theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed
+header_pages:
+  - impress.md
+  - privacy_policy.html
 
 permalink: /:title/
 # Exclude from processing.
