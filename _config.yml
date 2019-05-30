@@ -24,7 +24,7 @@ github_username:  dasdom
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-dinky
+theme: jekyll-theme-leap-day
 plugins:
   - jekyll-feed
 
