@@ -30,6 +30,7 @@ plugins:
 header_pages:
   - impress.md
   - privacy_policy.html
+show_excerpts: true
 
 permalink: /:title/
 # Exclude from processing.
