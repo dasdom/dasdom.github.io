@@ -32,3 +32,5 @@ Next the presentation is triggered. How this is done, depends on the code under 
 In the end we assert that the presented view controller has the expected type. Depending on the presented view controller, we could also assert that an expected item (user, point of interest, tweet, etc) has been passed to it.
 
 That's all. Straight forward. The tricky part is to remember to add the view controller under test as the root view controller to a window and make the window the key window.
+
+Follow me on [Twitter](https://www.twitter.com/dasdom).
