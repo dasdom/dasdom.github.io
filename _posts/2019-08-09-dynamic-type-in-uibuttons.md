@@ -15,7 +15,7 @@ One of the main features of my formulary app is the calculator. For the update I
 
 {% highlight swift %}
 let button = UIButton(type: .system)
-button.titleLabel.font = .preferredFont(forTextStyle: .body)
+button.titleLabel?.font = .preferredFont(forTextStyle: .body)
 button.titleLabel?.adjustsFontForContentSizeCategory = true
 {% endhighlight %}
 
