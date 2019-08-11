@@ -5,9 +5,7 @@ categories: iOS, ObjC, Update
 title: "Phy Update"
 ---
 
-# tl;dr
-
-I put an update of [my first app](https://apps.apple.com/de/app/phy-physics-formulas-and-calculator/id325836855?l=en) to the App Store. 10 years after it first got approved. 
+tl;dr: I put an update of [my first app](https://apps.apple.com/de/app/phy-physics-formulas-and-calculator/id325836855?l=en) to the App Store. 10 years after it first got approved. 
 
 # Story Time
 
