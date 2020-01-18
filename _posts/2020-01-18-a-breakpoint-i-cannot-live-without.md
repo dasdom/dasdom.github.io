@@ -15,5 +15,9 @@ It's a symbolic breakpoint on `-[UIViewController viewDidAppear:]` with the debu
 To have the breakpoint in all projects, move it to the User.
 This can be done by Crl click on the breakpoint and selecting *Move Breakpoint To / User*.
 
-Follow me on [Twitter](https://twitter.com/dasdom).
+{:refdef: style="text-align: center;"}
+![](../assets/2020-01-18/move_breakpoint_to_user.png)
+{:refdef}
+
+Follow me on [Twitter](https://twitter.com/dasdom).   
 Check out my open source code at [Github](https://github.com/dasdom).
