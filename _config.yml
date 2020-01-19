@@ -24,7 +24,7 @@ github_username:  dasdom
 
 # Build settings
 markdown: kramdown
-theme: minima
+theme: jekyll-theme-hacker
 plugins:
   - jekyll-feed
 header_pages:
