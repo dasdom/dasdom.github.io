@@ -22,15 +22,26 @@ url: "https://dasdom.github.io/" # the base hostname & protocol for your site, e
 twitter_username: dasdom
 github_username:  dasdom
 
+twitter:
+    username: dasdom
+    card: summary
+
 # Build settings
 markdown: kramdown
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-seo-tag
 header_pages:
   - impress.md
   - privacy_policy.html
 show_excerpts: true
+
+mimima:
+  social-links:
+    twitter: dasdom
+    github: dasdom
+    instagram: swiftandpainless
 
 permalink: /:title/
 # Exclude from processing.

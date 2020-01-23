@@ -1,0 +1,11 @@
+I"j<p>I wondered what happens when a view is not present in a specific size class in a storyboard because I want to mimic this behavior in code.</p>
+<p>I've created a test project and added two labels to the storyboard scene. <span class="lang:swift decode:true  crayon-inline ">labelOne</span> is in the size classes Any-Any. <span class="lang:swift decode:true  crayon-inline ">labelTwo</span> is only in the size class Regular-Compact.</p>
+<p>To see what's going on I added outlets and the following print commands in <span class="lang:swift decode:true  crayon-inline ">viewDidLoad</span>:</p>
+<pre class="lang:swift decode:true ">print("(labelOne.hidden) (labelOne.alpha) (labelOne.superview)")
+print("(labelTwo.hidden) (labelTwo.alpha) (labelTwo.superview)")</pre>
+<p>The debug output is:</p>
+<pre class="lang:sh decode:true ">false 1.0 Optional(&lt;UIView: 0x796e3740; frame = (0 0; 320 480); autoresize = W+H; layer = &lt;CALayer: 0x796e3910&gt;&gt;)
+false 1.0 nil</pre>
+<p>This means, the <span class="lang:swift decode:true  crayon-inline ">labelTwo</span> isn't shown when running for example on iPhone 4s because it is not added to the view. But the label is not nil even though it's a weak reference. I assume the reason behind that is that the storyboard holds a reference to the label.</p>
+<p>I will try to mimic this behavior when creating code that uses size classes.</p>
+:ET

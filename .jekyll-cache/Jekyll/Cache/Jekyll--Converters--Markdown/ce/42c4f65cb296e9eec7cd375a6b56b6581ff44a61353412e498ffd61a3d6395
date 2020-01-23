@@ -1,0 +1,92 @@
+I"�!<p>Testing is hard. That’s why it’s not done enough in iOS development. When I ask other developers, many don’t write unit tests at all. That’s no good. Unit tests are an essential tool to build high quality iOS apps and allow disruptive refactoring without breaking functionalities.</p>
+
+<p>The main advantages of writing unit tests are:</p>
+<ol>
+  <li>The code becomes refactorable.</li>
+  <li>Testable code usually is better code. So when you are “forced” to write code, your code automatically becomes better.</li>
+  <li>It’s less likely to introduce regression into code with a good test coverage.</li>
+  <li>Writing the tests first often makes implementing a new feature easier because you intentionally make very small steps.</li>
+  <li>Tests are a living documentation. With living I mean, it’s less likely that they get asynchronous to the actual code as it often happens to traditional documentation on some website.</li>
+</ol>
+
+<p>OK, tests are good and important. Let’s assume you are willing to start writing tests for your code. How do you start? The most important thing is to write the first test. So here are some easy tests you can introduce to you code right now. Let’s get started.</p>
+
+<h2 id="test-that-a-property-was-set">Test That A Property Was Set</h2>
+
+<p>Let’s say we have a <code class="highlighter-rouge">User</code> struct with a <code class="highlighter-rouge">firstname</code> and a <code class="highlighter-rouge">lastname</code>:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span>
+  <span class="k">var</span> <span class="nv">firstname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+  <span class="k">var</span> <span class="nv">lastname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Now we need a property <code class="highlighter-rouge">name</code> that is <code class="highlighter-rouge">firstname</code> and <code class="highlighter-rouge">lastname</code> with space in between.</p>
+
+<p>We will add that feature using Test-Diven Development (TDD). In TDD you write the test before you add the code to be testet. It sounds strange but after you got used to it, this totally makes sense. We assume the project already has a test target. (If this is not the case, just add a test target.)</p>
+
+<p>Now the test for the feature we are going to build:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="kt">XCTest</span>
+<span class="kd">@testable</span> <span class="kd">import</span> <span class="kt">MyApp</span>
+
+<span class="kd">class</span> <span class="kt">PropertyTests</span> <span class="p">:</span> <span class="kt">XCTestCase</span> <span class="p">{</span>
+  
+  <span class="k">var</span> <span class="nv">sut</span><span class="p">:</span> <span class="kt">User</span><span class="o">!</span>
+  
+  <span class="k">override</span> <span class="kd">func</span> <span class="nf">setUp</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">sut</span> <span class="o">=</span> <span class="kt">User</span><span class="p">()</span>
+  <span class="p">}</span>
+  
+  <span class="k">override</span> <span class="kd">func</span> <span class="nf">tearDown</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">sut</span> <span class="o">=</span> <span class="kc">nil</span>
+  <span class="p">}</span>
+  
+  <span class="kd">func</span> <span class="nf">test_name_property</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Arrange</span>
+
+    <span class="c1">// Act</span>
+    <span class="n">sut</span><span class="o">.</span><span class="n">firstname</span> <span class="o">=</span> <span class="s">"Foo"</span>
+    <span class="n">sut</span><span class="o">.</span><span class="n">lastname</span> <span class="o">=</span> <span class="s">"Bar"</span>
+    
+    <span class="c1">// Assert</span>
+    <span class="kt">XCTAssertEqual</span><span class="p">(</span><span class="n">sut</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">"Foo Bar"</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Try running the test with the shortcut ⌘U. The test does not compile because <code class="highlighter-rouge">User</code> doesn’t have a property named <code class="highlighter-rouge">name</code>. A not compiling test is a failing test. Let’s add enough code to make it compile.</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span>
+  <span class="k">var</span> <span class="nv">firstname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+  <span class="k">var</span> <span class="nv">lastname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+  <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Again run the test with ⌘U. Now the test compiles but if fails. This is a good sign because we haven’t implemented the code we like to test. If the test would pass before we have implemented the feature, probably the test would pass all the time and would therefore be useless.</p>
+
+<p>When we change the <code class="highlighter-rouge">User</code> struct to the following the test passes:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">struct</span> <span class="kt">User</span> <span class="p">{</span>
+  <span class="k">var</span> <span class="nv">firstname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+    <span class="k">didSet</span> <span class="p">{</span>
+      <span class="nf">updateName</span><span class="p">(</span><span class="nv">firstname</span><span class="p">:</span> <span class="n">firstname</span><span class="p">,</span>
+                 <span class="nv">lastname</span><span class="p">:</span> <span class="n">lastname</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">var</span> <span class="nv">lastname</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span> <span class="p">{</span>
+    <span class="k">didSet</span> <span class="p">{</span>
+      <span class="nf">updateName</span><span class="p">(</span><span class="nv">firstname</span><span class="p">:</span> <span class="n">firstname</span><span class="p">,</span>
+                 <span class="nv">lastname</span><span class="p">:</span> <span class="n">lastname</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">""</span>
+  
+  <span class="kd">private</span> <span class="k">mutating</span> <span class="kd">func</span> <span class="nf">updateName</span><span class="p">(</span><span class="nv">firstname</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">lastname</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="p">{</span>
+    
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">firstname</span><span class="se">)</span><span class="s"> </span><span class="se">\(</span><span class="n">lastname</span><span class="se">)</span><span class="s">"</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>If you run the test again, you’ll see that it now passes. Awesome! We just used Test-Driven Development to add a feature to the <code class="highlighter-rouge">User</code> struct.</p>
+
+<p>If you want to learn more about TDD and how to test many different scenarios in iOS development, I’m writing a book about that. It’s still im progress, but you can already get it at <a href="https://leanpub.com/tddfakebookforios">leanpub</a>.</p>
+:ET

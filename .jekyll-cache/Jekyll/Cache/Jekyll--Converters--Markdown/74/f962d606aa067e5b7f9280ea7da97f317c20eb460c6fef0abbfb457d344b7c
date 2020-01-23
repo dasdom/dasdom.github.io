@@ -1,0 +1,8 @@
+I"<p><strong>Note:</strong> Updated for Swift 2.0 and Xcode 7 beta 4</p>
+<p>I have an on-off relationship with the Interface Builder. In the last projects I tried to use it and I like it a lot for prototyping. But the more complex a project gets the more I hate it. It does take to long to load and often I have to search for the one setting in the different inspectors to get what I want.</p>
+<p>One of the thinks I miss, when I don't use the Interface Builder is the interface preview one get while working on the interface. I have started now to use Playgrounds for this.</p>
+<p>Let's for this post assume you want to create a login screen for an app. Open a Playground and put in the code:</p>
+<pre class="lang:swift decode:true ">import UIKit
+import XCPlayground
+</pre>
+:ET

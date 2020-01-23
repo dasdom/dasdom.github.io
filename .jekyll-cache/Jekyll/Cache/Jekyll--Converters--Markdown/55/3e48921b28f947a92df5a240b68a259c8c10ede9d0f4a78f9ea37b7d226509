@@ -1,0 +1,7 @@
+I"‡<p>Sometimes there are bug which only occur on release builds. Or you experiencing an app from the App Store which crashes and you want to see if there is something in the device log. Here is how you get the there:</p>
+<p>I Xcode 6 it's quite hidden. Connect you device to you Mac and open Xcode. Go to <em>Window/Devices</em>. In the left menu select you device and click the rectangle with the up error at the bottom of the window:</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/01/Screen-Shot-2015-01-23-at-15.03.23.png"><img src="/assets/Screen-Shot-2015-01-23-at-15.03.23.png" alt="Screen Shot 2015-01-23 at 15.03.23" width="102" height="41" class="aligncenter size-full wp-image-484" /></a></p>
+<p>It opens the log window which looks in my case like this:<br />
+<a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/01/Screen-Shot-2015-01-23-at-15.05.08.png"><img src="/assets/Screen-Shot-2015-01-23-at-15.05.08-1024x486.png" alt="Screen Shot 2015-01-23 at 15.05.08" width="640" height="304" class="aligncenter size-large wp-image-485" /></a></p>
+<p>Can you figure out what I did during the log was taken? :)</p>
+:ET

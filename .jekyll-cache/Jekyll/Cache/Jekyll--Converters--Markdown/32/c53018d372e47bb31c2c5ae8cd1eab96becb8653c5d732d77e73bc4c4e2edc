@@ -1,0 +1,8 @@
+I"v<p>I think I found a nice way to stub <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span> using dependency injection.</p>
+<p>Let's say you have an app that should fetch the info of a user from App.net and create a user object/struct from that info. To be able to unit test that feature you want to stub the HTTP request in the test.</p>
+<p>You could use <a href="https://github.com/kylef/Mockingjay">Mockingjay</a> or you could write your own <a href="http://www.raywenderlich.com/59982/nsurlprotocol-tutorial">NSURLProtocol</a>. But with Swift 1.2 there is an even simpler approach.</p>
+<p>In the test you can inject the mock class to be used instead of <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span>.</p>
+<p>Here is the view controller with the method to fetch the user data:</p>
+<pre class="lang:swift decode:true ">import UIKit
+</pre>
+:ET

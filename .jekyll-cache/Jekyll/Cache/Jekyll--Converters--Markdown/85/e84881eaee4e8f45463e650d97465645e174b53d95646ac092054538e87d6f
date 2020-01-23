@@ -1,0 +1,10 @@
+I"<p>A few days ago I learned a neat trick. You maybe familiar with the look of a plain table view on iOS:</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/06/Simulator-Screen-Shot-29.06.2015-21.46.49.png"><img src="/assets/Simulator-Screen-Shot-29.06.2015-21.46.49.png" alt="Simulator Screen Shot 29.06.2015 21.46.49" width="640" height="960" class="aligncenter size-full wp-image-735" /></a></p>
+<p>Even though there are only two cells in the table view, there are all those lines and it looks like there are many more empty cells. Sometimes you don't want those empty cells. You could use a grouped table view but this looks different especially when you have section headers.</p>
+<p>The trick is to add a table footer view:</p>
+<pre class="lang:swift decode:true ">tableView.tableFooterView = UIView(frame: CGRect.zeroRect)
+</pre>
+<p>As you can see the footer view has a frame of  <span class="lang:swift decode:true  crayon-inline ">zeroRect</span>  which is the same as  <span class="lang:swift decode:true  crayon-inline ">CGRectMake(0, 0, 0, 0)</span> . The result looks like this:</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/06/Simulator-Screen-Shot-29.06.2015-22.04.30.png"><img src="/assets/Simulator-Screen-Shot-29.06.2015-22.04.30.png" alt="Simulator Screen Shot 29.06.2015 22.04.30" width="640" height="960" class="aligncenter size-full wp-image-736" /></a></p>
+<p>You can find the trivial code on <a href="https://github.com/dasdom/TableViewFooterDemo">github</a>.</p>
+:ET

@@ -5,8 +5,6 @@ permalink: /impressum/
 ---
 
 Verantwortlch für diese Seite ist:
-Dr. Dominik Hauser
-Zietenstraße 71
-40476 Düsseldorf
+Dominik Hauser
 
 dominik.hauser(ät)dasdom(döt)de

@@ -1,0 +1,159 @@
+I"�J<p>It have been too long since my last post. Sorry about that. I’m really
+busy right now. More on that in a few weeks, I guess. :)</p>
+
+<p>In the <a href="http://swiftandpainless.com/how-to-build-an-app-without-interface-builder-part-7-nicer-cell/">last
+post</a>
+we have added a pattern image to the birthday cell. In this post we will
+make the progress the patter is showing reflecting the time left until
+the person has birthday again.</p>
+
+<p>Open <code class="highlighter-rouge">BirthdayCell.swift</code>
+and add the following property:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="k">var</span> <span class="nv">patternWidthConstraint</span><span class="p">:</span> <span class="kt">NSLayoutConstraint</span><span class="p">?</span></code></pre></figure>
+
+<p>Next replace the hard coded trailing constraint with a dynamic
+constraint:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="c1">// Replace this</span>
+<span class="n">layoutConstraints</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">patternView</span><span class="o">.</span><span class="n">trailingAnchor</span><span class="o">.</span><span class="nf">constraintEqualToAnchor</span><span class="p">(</span><span class="n">trailingAnchor</span><span class="p">,</span> <span class="nv">constant</span><span class="p">:</span> <span class="o">-</span><span class="mi">150</span><span class="p">))</span>
+
+<span class="c1">// with this</span>
+<span class="n">patternWidthConstraint</span> <span class="o">=</span> <span class="n">patternView</span><span class="o">.</span><span class="n">widthAnchor</span><span class="o">.</span><span class="nf">constraintEqualToConstant</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">layoutConstraints</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">patternWidthConstraint</span><span class="o">!</span><span class="p">)</span></code></pre></figure>
+
+<!--more-->
+<p>With this change we will be able to set the progress of the cell from
+the controller using the constant of the trailing constraint. To
+encapsulate the access to the constraint, add the following method to
+<code class="highlighter-rouge">BirthdayCell</code>:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">updateProgress</span><span class="p">(</span><span class="nv">progress</span><span class="p">:</span> <span class="kt">Float</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">patternWidthConstraint</span><span class="p">?</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="kt">CGFloat</span><span class="p">(</span><span class="n">progress</span><span class="p">)</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">width</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The progress shown in the cell will reflect the days left until that
+person has birthday normalized to the number of days in a year. To
+calculate the remaining days we need a calendar with which we can
+calculate the date components. Open <code class="highlighter-rouge">BirthdaysListDataProvider.swift</code>
+and add the following properties:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">private</span> <span class="k">let</span> <span class="nv">gregorian</span> <span class="o">=</span> <span class="kt">NSCalendar</span><span class="p">(</span><span class="nv">calendarIdentifier</span><span class="p">:</span> <span class="kt">NSCalendarIdentifierGregorian</span><span class="p">)</span>
+<span class="k">var</span> <span class="nv">todayComponents</span><span class="p">:</span> <span class="kt">NSDateComponents</span><span class="p">?</span>
+<span class="k">var</span> <span class="nv">today</span><span class="p">:</span> <span class="kt">NSDate</span><span class="p">?</span> <span class="p">{</span>
+  <span class="k">didSet</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="k">let</span> <span class="nv">today</span> <span class="o">=</span> <span class="n">today</span> <span class="p">{</span>
+      <span class="n">todayComponents</span> <span class="o">=</span> <span class="n">gregorian</span><span class="p">?</span><span class="o">.</span><span class="nf">components</span><span class="p">([</span><span class="o">.</span><span class="kt">Month</span><span class="p">,</span> <span class="o">.</span><span class="kt">Day</span><span class="p">,</span> <span class="o">.</span><span class="kt">Year</span><span class="p">],</span> <span class="nv">fromDate</span><span class="p">:</span> <span class="n">today</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>When ever <code class="highlighter-rouge">today</code> is set, its
+date components are calculated and assigned to <code class="highlighter-rouge">todayComponents</code>.
+This allows us to calculate the remaining days in percent until the date
+of birthday. Add the following code to <code class="highlighter-rouge">tableView(_:cellForRowAtIndexPath:)</code>,
+right before <code class="highlighter-rouge">return cell</code>:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="k">let</span> <span class="nv">calculationComponents</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span>
+<span class="k">if</span> <span class="k">let</span> <span class="nv">today</span> <span class="o">=</span> <span class="n">today</span><span class="p">,</span> <span class="n">todayComponents</span> <span class="o">=</span> <span class="n">todayComponents</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="n">gregorian</span><span class="o">!.</span><span class="nf">compareDate</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="nv">toDate</span><span class="p">:</span> <span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">date</span><span class="o">!</span><span class="p">,</span> <span class="nv">toUnitGranularity</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="kt">Month</span><span class="p">,</span> <span class="o">.</span><span class="kt">Day</span><span class="p">])</span> <span class="o">==</span> <span class="o">.</span><span class="kt">OrderedDescending</span> <span class="p">{</span>
+    <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
+    
+  <span class="p">}</span>
+  
+  <span class="k">let</span> <span class="nv">components</span> <span class="o">=</span> <span class="n">gregorian</span><span class="p">?</span><span class="o">.</span><span class="nf">components</span><span class="p">([</span><span class="o">.</span><span class="kt">Day</span><span class="p">],</span> <span class="nv">fromDateComponents</span><span class="p">:</span> <span class="n">todayComponents</span><span class="p">,</span> <span class="nv">toDateComponents</span><span class="p">:</span> <span class="n">calculationComponents</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="p">[])</span>
+  
+  <span class="n">cell</span><span class="o">.</span><span class="nf">updateProgress</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="kt">Float</span><span class="p">(</span><span class="n">components</span><span class="o">!.</span><span class="n">day</span><span class="p">)</span><span class="o">/</span><span class="kt">Float</span><span class="p">(</span><span class="mi">365</span><span class="p">))</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>(Note: This is actually wrong. See the correction
+<a href="http://swiftandpainless.com/how-to-build-an-app-without-interface-builder-part-8-12-correction-and-future/">here</a>.)</p>
+
+<p>With this code, we first figure out if the next birthday of that person
+will be this year or next year. Then we calculate the remaining days and
+update the progress of the cell.</p>
+
+<p>The last thing we have to do is to set <code class="highlighter-rouge">today</code> when ever the
+view controller becomes visible. Open <code class="highlighter-rouge">BirthdaysListViewController</code>
+and add the following method:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="k">override</span> <span class="kd">func</span> <span class="nf">viewWillAppear</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">super</span><span class="o">.</span><span class="nf">viewWillAppear</span><span class="p">(</span><span class="n">animated</span><span class="p">)</span>
+  <span class="n">dataProvider</span><span class="p">?</span><span class="o">.</span><span class="n">today</span> <span class="o">=</span> <span class="kt">NSDate</span><span class="p">()</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is all we need to do to get the remaining time as progress shown in
+the cells. Build an run. Add a few persons to the list. The result
+should look like this:<br />
+<img src="/assets/Simulator-Screen-Shot-20.11.2015-09.29.48-200x300.png" alt="" /></p>
+
+<p>Wouldn’t it be better if the list was ordered such that the next
+birthday is at the top? Yes, it would!</p>
+
+<p>Open <code class="highlighter-rouge">BirthdaysListDataProvider.swift</code>
+and extract the code calculating the progress in a method:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">progressUntilBirthday</span><span class="p">(</span><span class="nv">birthday</span><span class="p">:</span> <span class="kt">Birthday</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Float</span><span class="p">?</span> <span class="p">{</span>
+  <span class="k">let</span> <span class="nv">calculationComponents</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span>
+  
+  <span class="k">if</span> <span class="k">let</span> <span class="nv">today</span> <span class="o">=</span> <span class="n">today</span><span class="p">,</span> <span class="n">todayComponents</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">date</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">gregorian</span><span class="o">!.</span><span class="nf">compareDate</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="nv">toDate</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span> <span class="nv">toUnitGranularity</span><span class="p">:</span> <span class="p">[</span><span class="o">.</span><span class="kt">Month</span><span class="p">,</span> <span class="o">.</span><span class="kt">Day</span><span class="p">])</span> <span class="o">==</span> <span class="o">.</span><span class="kt">OrderedDescending</span> <span class="p">{</span>
+      <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">}</span>
+    
+    <span class="k">let</span> <span class="nv">components</span> <span class="o">=</span> <span class="n">gregorian</span><span class="p">?</span><span class="o">.</span><span class="nf">components</span><span class="p">([</span><span class="o">.</span><span class="kt">Day</span><span class="p">],</span> <span class="nv">fromDateComponents</span><span class="p">:</span> <span class="n">todayComponents</span><span class="p">,</span> <span class="nv">toDateComponents</span><span class="p">:</span> <span class="n">calculationComponents</span><span class="p">,</span> <span class="nv">options</span><span class="p">:</span> <span class="p">[])</span>
+    
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">-</span><span class="kt">Float</span><span class="p">(</span><span class="n">components</span><span class="o">!.</span><span class="n">day</span><span class="p">)</span><span class="o">/</span><span class="kt">Float</span><span class="p">(</span><span class="mi">365</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>(Note: This is actually wrong. See the correction
+<a href="http://swiftandpainless.com/how-to-build-an-app-without-interface-builder-part-8-12-correction-and-future/">here</a>.)</p>
+
+<p>Now replace <code class="highlighter-rouge">tableView(_:cellForRowAtIndexPath:)</code>
+with the following:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">tableView</span><span class="p">(</span><span class="nv">tableView</span><span class="p">:</span> <span class="kt">UITableView</span><span class="p">,</span> <span class="n">cellForRowAtIndexPath</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">NSIndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UITableViewCell</span> <span class="p">{</span>
+  <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">tableView</span><span class="o">.</span><span class="nf">dequeueReusableCellWithIdentifier</span><span class="p">(</span><span class="n">cellIdentifer</span><span class="p">,</span> <span class="nv">forIndexPath</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as!</span> <span class="kt">BirthdayCell</span>
+  
+  <span class="k">let</span> <span class="nv">birthday</span> <span class="o">=</span> <span class="n">birthdays</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">row</span><span class="p">]</span>
+  <span class="n">cell</span><span class="o">.</span><span class="n">nameLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">firstName</span>
+  <span class="n">cell</span><span class="o">.</span><span class="n">patternNameLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">firstName</span>
+  <span class="n">cell</span><span class="o">.</span><span class="n">birthdayLabel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">"</span><span class="se">\(</span><span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">day</span><span class="se">)</span><span class="s"> </span><span class="se">\(</span><span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="n">month</span><span class="se">)</span><span class="s">"</span>
+  
+  <span class="k">if</span> <span class="k">let</span> <span class="nv">progress</span> <span class="o">=</span> <span class="nf">progressUntilBirthday</span><span class="p">(</span><span class="n">birthday</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">cell</span><span class="o">.</span><span class="nf">updateProgress</span><span class="p">(</span><span class="n">progress</span><span class="p">)</span>
+  <span class="p">}</span>
+  
+  <span class="k">return</span> <span class="n">cell</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As we have extracted the method that calculates the remaining days, we
+can use it to sort the list. Replace the method <code class="highlighter-rouge">addBirthday(_:)</code>
+with the following:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">addBirthday</span><span class="p">(</span><span class="nv">birthday</span><span class="p">:</span> <span class="kt">Birthday</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">birthdays</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="n">birthday</span><span class="p">)</span>
+  <span class="n">birthdays</span><span class="o">.</span><span class="n">sortInPlace</span> <span class="p">{</span> <span class="nf">progressUntilBirthday</span><span class="p">(</span><span class="nv">$0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nf">progressUntilBirthday</span><span class="p">(</span><span class="nv">$1</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>With this change, we sort the birthdays list after we have added a new
+person to the list. Build and run and add a few person to the list. You
+should see something like this:</p>
+
+<p><img src="/assets/Simulator-Screen-Shot-20.11.2015-09.55.54-200x300.png" alt="" /></p>
+
+<p>Nice. We are getting somewhere.</p>
+
+<p>This is all for today. Let us hope it won’t take that long for the next
+post. Stay tuned.</p>
+
+<p>You can find the current progress of the project on
+<a href="https://github.com/dasdom/Birthdays/tree/part8">github</a>.</p>
+:ET

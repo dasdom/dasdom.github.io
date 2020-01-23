@@ -1,0 +1,76 @@
+I"�<p>Yesterday I got asked, what a Swift beginner should learn first. Here is
+the question:</p>
+
+<blockquote>
+  <p>I did want to ask you something, is it worth a while to learn TDD, or
+spend that time learning Swift, and functional programming?</p>
+</blockquote>
+
+<p>Of course, my opinion is a bit biased as I wrote a <a href="http://swiftandpainless.com/book/">book about TDD with
+Swift</a>. So, keep that in mind when
+you read my answer.</p>
+
+<p><strong>Advice #1: Read the <a href="https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/">Swift
+Book</a>
+provided by Apple.</strong></p>
+
+<p>In my opinion you should first learn Swift. This is the basis of
+everything. If you don’t understand what functions can do in Swift, you
+won’t understand the concepts of functional programming in Swift. In
+addition, Swift is still mainly used to write apps for iOS and OS X.
+This means, most of the time you need to interact with object oriented
+APIs (at least at the time of writing ;)). So you also need to
+understand object oriented Swift to leverage the potential of Swift when
+writing Swift.</p>
+
+<p>And even if you don’t believe me, this is what Chris Eidhof, Florian
+Kugler, and Wouter Swierstra write in <a href="https://www.objc.io/books/functional-swift/">Functional
+Swift</a>:</p>
+
+<blockquote>
+  <p>„You should be comfortable reading Swift programs and familiar with
+common programming concepts, such as classes, methods, and variables.
+If you’ve only just started to learn to program, this may not be the
+right book for you.“
+<!--more--></p>
+</blockquote>
+
+<p><strong>Advice #2: Read a ton of blog posts. There are so many great Swift
+blogs.</strong></p>
+
+<p>The book by Apple is very good. But if you want to see what all those
+creative minds in the community come up with, you need to read many
+blogs.</p>
+
+<p><strong>Advice #3: Learn writing tests and use the knowledge to write tests
+for your code.</strong></p>
+
+<p>In my opinion testing is essential. Every developer should test their
+code. There are so many benefits to a good test harness. <a href="https://twitter.com/mfeathers">Michael
+Feathers</a> writes in <a href="http://www.goodreads.com/book/show/44919.Working_Effectively_with_Legacy_Code?from_search=true">Working Effectively
+with Legacy
+Code</a>:</p>
+
+<blockquote>
+  <p>To me, legacy code is simply code without tests.</p>
+</blockquote>
+
+<p>For me Test-Driven Development is good to start with tests because the
+question what to test is secondary. You (kind of) write tests for
+(nearly) everything. One of the rules in TDD is that you only write code
+if you have a failing test.</p>
+
+<p><strong>Advice #4: Learn functional programming.</strong></p>
+
+<p>Swift also has functional aspects. You don’t need to use them, but if
+you are (or willing to become) active in den community, you most
+probably will encounter functional magic soon. In my opinion, learning
+functional programming makes you a better developer. Often functional
+code looks like magic at first. It <em>just</em> works (which you can prove
+because you have tests).</p>
+
+<p>This is my opinion. I am sure that there are many developer with
+different opinions. Go on, ask them what they think about it.</p>
+
+<p>And, buy my book. ;)</p>
+:ET

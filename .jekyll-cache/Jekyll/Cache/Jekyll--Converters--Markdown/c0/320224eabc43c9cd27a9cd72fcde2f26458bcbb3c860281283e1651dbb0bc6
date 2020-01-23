@@ -1,0 +1,4 @@
+I"à<p>Here is the problem: Sometimes you want to test an element that could be
+nil. For example, I recently wanted to test if a view controller has a
+right bar button item with a given target. This could be done like this:</p>
+:ET

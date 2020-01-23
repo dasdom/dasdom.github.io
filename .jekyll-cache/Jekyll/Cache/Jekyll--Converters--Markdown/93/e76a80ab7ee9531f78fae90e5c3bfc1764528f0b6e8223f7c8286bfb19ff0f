@@ -1,0 +1,62 @@
+I" <p>I know the awesome [AFNetworking framework](http://afnetworking.com) by [Mattt Thompson](http://mattt.me) even though I haven't used it yet. The reason for not using it is, that in all the projects I did so far I only needed basic requests to easy to use APIs. Using AFNetworking would have been an overkill. In additions I am still learning and needed first to develop my own style of using the networking frameworks that Apple provides.</p>
+<p>Here is how I do network requests these days.</p>
+<p>To have all the definitions of the API endpoints in one spot, I define static functions at the top of my networking class. (I'm using the App.net-API as an example.)</p>
+<p>[code language="objc"]<br />
+static NSString *baseURLString  = @&quot;https://alpha-api.app.net/stream/0/&quot;;</p>
+<p>static NSURL *globalStreamURL(void)    { return [NSURL URLWithString:[NSString stringWithFormat:@&quot;%@%@&quot;, baseURLString, @&quot;posts/stream/global&quot;]]; }<br />
+[/code]</p>
+<p>As I create several `NSURLRequests` I have helper methods to construct those.</p>
+<p>[code language="objc"]<br />
+- (NSURLRequest*)requestWithURL:(NSURL*)url method:(NSString*)restMethod body:(NSDictionary*)body<br />
+{<br />
+    NSArray *allowedMethodNames = @[@&quot;GET&quot;, @&quot;POST&quot;, @&quot;DELETE&quot;];<br />
+    NSAssert([allowedMethodNames containsObject:restMethod], @&quot;Only GET, POST and DELETE are allowed as rest methods at the moment.&quot;);</p>
+<p>    NSMutableURLRequest *urlRequest = [[NSMutableURLRequest alloc] initWithURL:url];<br />
+    [urlRequest setValue:@&quot;application/json&quot; forHTTPHeaderField:@&quot;Content-Type&quot;];<br />
+    urlRequest.HTTPMethod = restMethod;</p>
+<p>    if (body) {<br />
+        NSError *jsonError = nil;<br />
+        NSData *bodyData = [NSJSONSerialization dataWithJSONObject:body options:kNilOptions error:&amp;jsonError];<br />
+        if (jsonError) {<br />
+            return nil;<br />
+        }<br />
+        urlRequest.HTTPBody = bodyData;<br />
+    }</p>
+<p>    return urlRequest;<br />
+}</p>
+<p>- (NSURLRequest*)postRequestWithURL:(NSURL*)url body:(NSDictionary*)body {<br />
+    return [self requestWithURL:url method:@&quot;POST&quot; body:body];<br />
+}</p>
+<p>- (NSURLRequest*)getRequestWithURL:(NSURL*)url {<br />
+    return [self requestWithURL:url method:@&quot;GET&quot; body:nil];<br />
+}<br />
+[/code]</p>
+<p>The actual API call is a public method with a completion block.</p>
+<p>[code language="objc"]<br />
+- (void)fetchGlobalStreamWithCompletion:(void(^)(NSArray *globalPostsArray, NSError *error))completion {<br />
+    NSURLRequest *urlRequest = [self getRequestWithURL:globalStreamURL()];</p>
+<p>    NSURLSession *session = [self sessionWithDefaultConfig];<br />
+    NSURLSessionTask *sessionTask = [session dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {</p>
+<p>        NSError *jsonError = nil;<br />
+        NSDictionary *responseDictionary = nil;<br />
+        if (!error) {<br />
+            responseDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&amp;jsonError];<br />
+            NSLog(@&quot;responseString: %@&quot;, [data stringValue]);<br />
+            globalPostsArray = responseDictionary[kDataKey];<br />
+            error = jsonError;<br />
+        }<br />
+        if (completion) completion(globalPostsArray, error);<br />
+    }];<br />
+    [sessionTask resume];<br />
+}<br />
+[/code]</p>
+<p>As I'm only using `NSURLSessions` with default config I have a helper method to construct those.</p>
+<p>[code language="objc"]<br />
+#pragma mark - Session with default config<br />
+- (NSURLSession*)sessionWithDefaultConfig {<br />
+    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];<br />
+    return [NSURLSession sessionWithConfiguration:sessionConfiguration];<br />
+}<br />
+[/code]</p>
+<p>In the next post I will share how I test this code.</p>
+:ET

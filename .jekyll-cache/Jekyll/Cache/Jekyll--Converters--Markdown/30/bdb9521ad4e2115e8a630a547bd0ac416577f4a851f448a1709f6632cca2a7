@@ -1,0 +1,58 @@
+I"�	<p>Yesterday I gave a talk at the Cologne Swift meetup and I tried
+something new. I used a Swift Playground for the “Slides”.</p>
+
+<p><img src="/assets/Functions-Basics-I.xcplaygroundpage-2016-04-22-09-22-36.png" alt="Functions - Basics I.xcplaygroundpage 2016-04-22
+09-22-36" />
+<!--more-->
+These are my takeaways:</p>
+
+<h2 id="presentation-mode">Presentation mode</h2>
+
+<p>Xcode has a presentation mode. But as the resolution of the beamer may
+be different to the resolution of your Mac, you might have to change the
+font size to make all the text fit on the screen for each slide and
+still be readable.</p>
+
+<p><strong>Takeaway #1: Anticipate that the “slides” look a bit different on the
+beamer.</strong></p>
+
+<h2 id="too-many-pages">Too many pages</h2>
+
+<p>At the end the Playground had 49 pages. This seems to me a bit too much
+for Xcode 7.3. During preparation Xcode crashed several times and the
+day before the presentation my Mac froze completely and had to me forced
+rebooted.</p>
+
+<p><strong>Takeaway #2: Next time I will split the Playground into several
+smaller ones.</strong></p>
+
+<h2 id="answering-questions">Answering questions</h2>
+
+<p>Even though I was a bit worried that the Xcode could crash, it was nice
+to be able to answer small questions right away in the live Playground.
+I could change something in the code to answer the question or to figure
+out what the question actually is about. This was really nice.</p>
+
+<p><strong>Takeaway #3: Answering questions is a lot easier when you can show
+the working (or crashing) code live in the Playground.</strong></p>
+
+<h2 id="navigation">Navigation</h2>
+
+<p>You might have noticed in the screenshot that I have added “buttons” to
+navigate to the previous and next slide. This is done using emoji and
+the <code class="highlighter-rouge">@previous</code> and <code class="highlighter-rouge">@next</code> keywords. Unfortunately you cannot map the
+actions to the arrow keys. So you have to click on the “buttons” with
+the cursor.</p>
+
+<p><strong>Takeaway #4: Cannot be controlled with keys or a clicker (yet).</strong></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I really enjoyed to present an introduction to Swift in a Playground and
+will use it again, when the topic is appropriate.</p>
+
+<p>The Playground I used is on
+<a href="https://github.com/dasdom/Swiftandpainless">github</a>. You can use it for
+you own talk. I would appreciate if you have a link to the original
+Playground somewhere in it (don’t need to be shown during the talk).</p>
+:ET

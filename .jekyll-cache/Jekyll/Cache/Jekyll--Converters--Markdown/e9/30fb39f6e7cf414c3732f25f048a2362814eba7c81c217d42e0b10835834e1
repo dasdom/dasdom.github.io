@@ -1,0 +1,64 @@
+I"W<p>Again I haven’t written a post in a long time in this series. And even
+this post isn’t a real post. It’s just a correction and and I’ll tell
+you the reason why I was so busy during the last months. There will be a
+real post soon. Stay tuned. :)
+<!--more--></p>
+
+<p>But first let’s correct two bugs from the last post. <a href="https://github.com/StefanJager">Stefan
+Jager</a> figured out that the comparison
+of the today date and the date of the birthday of the person didn’t work
+as expected. He was so kind to create a pull-request and I merged it.
+You can find the pull-request
+<a href="https://github.com/dasdom/Birthdays/pull/1/files">here</a>. Thanks Stefan!</p>
+
+<p>In the same function <a href="https://github.com/stefanscheidt">Stefan Scheidt</a>
+found another problem and improved the code. Please find the
+pull-request <a href="https://github.com/dasdom/Birthdays/pull/3/files">here</a>.
+Thanks Stefan!</p>
+
+<p>I combined the fixes from both pull-requests. The final version of the
+<code class="highlighter-rouge">progressUntilBirthday(_:)</code>
+method looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">progressUntilBirthday</span><span class="p">(</span><span class="nv">birthday</span><span class="p">:</span> <span class="kt">Birthday</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Float</span><span class="p">?</span> <span class="p">{</span>
+  
+  <span class="k">let</span> <span class="nv">calculationComponents</span> <span class="o">=</span> <span class="n">birthday</span><span class="o">.</span><span class="n">birthday</span><span class="o">.</span><span class="nf">copy</span><span class="p">()</span> <span class="k">as!</span> <span class="kt">NSDateComponents</span>
+  <span class="k">if</span> <span class="k">let</span> <span class="nv">todayComponents</span> <span class="o">=</span> <span class="n">todayComponents</span> <span class="p">{</span>
+    <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">year</span>
+    
+    <span class="k">if</span> <span class="n">calculationComponents</span><span class="o">.</span><span class="n">month</span> <span class="o">&lt;</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">month</span> <span class="o">||</span>
+      <span class="p">(</span><span class="n">calculationComponents</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">month</span> <span class="o">&amp;&amp;</span>
+        <span class="n">calculationComponents</span><span class="o">.</span><span class="n">day</span> <span class="o">&lt;</span> <span class="n">todayComponents</span><span class="o">.</span><span class="n">day</span><span class="p">)</span> <span class="p">{</span>
+      
+      <span class="n">calculationComponents</span><span class="o">.</span><span class="n">year</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1">// Swift 3 compliant ...</span>
+    <span class="p">}</span>
+    
+    <span class="k">let</span> <span class="nv">components</span> <span class="o">=</span> <span class="n">gregorian</span><span class="p">?</span><span class="o">.</span><span class="nf">components</span><span class="p">([</span><span class="o">.</span><span class="kt">Day</span><span class="p">],</span>
+                                           <span class="nv">fromDateComponents</span><span class="p">:</span> <span class="n">todayComponents</span><span class="p">,</span>
+                                           <span class="nv">toDateComponents</span><span class="p">:</span> <span class="n">calculationComponents</span><span class="p">,</span>
+                                           <span class="nv">options</span><span class="p">:</span> <span class="p">[])</span>
+    
+    <span class="k">return</span> <span class="mf">1.0</span><span class="o">-</span><span class="kt">Float</span><span class="p">(</span><span class="n">components</span><span class="o">!.</span><span class="n">day</span><span class="p">)</span><span class="o">/</span><span class="kt">Float</span><span class="p">(</span><span class="mi">365</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">nil</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>You can find the final version on
+<a href="https://github.com/dasdom/Birthdays/tree/8.5">github</a>.</p>
+
+<h2 id="now-to-something-completely-different">Now to something completely different</h2>
+
+<p>When I started this series, I planed to publish a post every week. This
+didn’t work the last months. And here is why.</p>
+
+<p>I wrote (and kind of am still writing) <a href="https://www.packtpub.com/application-development/test-driven-development-swift">a book about Test-Driven
+Development</a>.
+You may have heard that writing a book is a lot of work. That is true.
+In addition I had a four day work week and my lovely small family.</p>
+
+<p>Now that the books is nearly finished I’m quite confident that I can
+continue this series.</p>
+
+<p>Thank you for your patience!</p>
+:ET

@@ -1,0 +1,4 @@
+I"Ø<p>I donâ€™t know about you, but I tend to forget that there is a responder
+chain in iOS. This post is to remind myself (and you) that the responder
+chain exists and that we can use it to react to button events.</p>
+:ET

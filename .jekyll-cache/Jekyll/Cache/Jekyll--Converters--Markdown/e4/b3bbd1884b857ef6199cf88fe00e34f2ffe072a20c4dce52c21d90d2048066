@@ -1,0 +1,97 @@
+I"h"<p>Sometimes you need to add automatic tests for the UI of your app. There are several different approaches to achieve this.</p>
+
+<p>In the test you could get the elements of the screen and assert if all the frames are as you expect. Depending on the UI you want to test, this can be a lot of work.</p>
+
+<p>Or you could use UI tests provided by Xcode. But those are slow and in my experience sometimes they just stop working.</p>
+
+<p>There is a better alternative. Uber has an open source component called <a href="https://github.com/uber/ios-snapshot-test-case/">ios-snapshot-test-case</a>. With this you can create snapshot tests. A snapshot test compares the UI of a view with a snapshot of how the view should look like. Let’s see how this works.</p>
+
+<p>The UI I would like to test looks like this:</p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/2018-07-22/01.png" alt="The screen to be tested" /></p>
+
+<p>The UI consists of a label, two text fields and a button.</p>
+
+<h2 id="installing-iossnapshottestcase-using-carthage">Installing iOSSnapshotTestCase using Carthage</h2>
+
+<p>I’m a Carthage person. So I will show you how to use Carthage to install <code class="highlighter-rouge">iOSSnapshotTestCase</code> in the test target and use it to add a snapshot test for a simple login screen.</p>
+
+<p>Create a Cartfile that looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">github <span class="s2">"uber/ios-snapshot-test-case"</span></code></pre></figure>
+
+<p>Then ask Carthage to create the dynamic framework with the command</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">carthage update <span class="nt">--platform</span> iOS</code></pre></figure>
+
+<p>Carthage will fetch the source code from github and build the framework. When Carthage is finished, drag the framework from the <code class="highlighter-rouge">Carthage/Bild/iOS</code> folder to <strong>Link Binary with Libraries</strong> build phase of you test target:</p>
+<p style="text-align: center;"><img src="http://localhost:4000/assets/2018-07-22/02.png" alt="Add framework" /></p>
+
+<p>As you can see, the name of the framework is <code class="highlighter-rouge">FBSnapshotTestCase</code> and not iOSSnapshotTestCase. Facebook was the original author of this framework and Uber hasn’t manage to change the name yet.</p>
+
+<p>Next, add a new run script build phase to the test target. Put in the command</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">/usr/local/bin/carthage copy-frameworks</code></pre></figure>
+
+<p>and add the Input File <code class="highlighter-rouge">$(SRCROOT)/Carthage/Build/iOS/FBSnapshotTestCase.framework</code>. In Xcode it should look like this:</p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/2018-07-22/03.png" alt="Run script phase" /></p>
+
+<h1 id="configure-fbsnapshottestcase">Configure FBSnapshotTestCase</h1>
+
+<p>Next you need to configure the directories where the snapshots should be put. You can also tell <code class="highlighter-rouge">FBSnapshotTestCase</code> to create a diff image whenever a snapshot test fails. This means, when a test fails, an image is created that shows the difference between the expected UI and the UI that made the test fail. That way you can figure out what changed in the UI.</p>
+
+<p>Open the scheme you use of the test and add the following environment variables:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">IMAGE_DIFF_DIR: <span class="si">$(</span>SOURCE_ROOT<span class="si">)</span>/<span class="si">$(</span>PROJECT_NAME<span class="si">)</span>Tests/FailureDiffs
+FB_REFERENCE_IMAGE_DIR: <span class="si">$(</span>SOURCE_ROOT<span class="si">)</span>/<span class="si">$(</span>PROJECT_NAME<span class="si">)</span>Tests/ReferenceImages</code></pre></figure>
+
+<p>In Xcode this looks like this:</p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/2018-07-22/04.png" alt="Environment variables" /></p>
+
+<h1 id="create-the-snapshot">Create the snapshot</h1>
+
+<p>To create a snapshot test, add a subclass of <code class="highlighter-rouge">FBSnapshotTestCase</code> to your test target and add the following import statement:</p>
+
+<figure class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="cp">#import &lt;FBSnapshotTestCase/FBSnapshotTestCase.h&gt;</span></code></pre></figure>
+
+<p>Next add the test method:</p>
+
+<figure class="highlight"><pre><code class="language-objc" data-lang="objc"><span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">test_loginSnapshot</span> <span class="p">{</span>
+    <span class="n">UIStoryboard</span> <span class="o">*</span><span class="n">storyboard</span> <span class="o">=</span> <span class="p">[</span><span class="n">UIStoryboard</span> <span class="nf">storyboardWithName</span><span class="p">:</span><span class="s">@"Main"</span> <span class="nf">bundle</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+    <span class="n">UIViewController</span> <span class="o">*</span><span class="n">viewController</span> <span class="o">=</span> <span class="p">[</span><span class="n">storyboard</span> <span class="nf">instantiateInitialViewController</span><span class="p">];</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">recordMode</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    
+    <span class="p">[</span><span class="n">viewController</span> <span class="nf">view</span><span class="p">];</span>
+    
+    <span class="n">FBSnapshotVerifyView</span><span class="p">(</span><span class="n">viewController</span><span class="p">.</span><span class="n">view</span><span class="p">,</span> <span class="nb">nil</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The first two lines create an instance of the view controller you want to test. The line <code class="highlighter-rouge">self.recoredMode = true;</code> tells the <code class="highlighter-rouge">FBSnapshotTestCase</code> that it should create the reference snapshot. The line <code class="highlighter-rouge">[viewController view];</code> triggers the loading of the view. This is necessary because otherwise the view is nil in the test. 
+With <code class="highlighter-rouge">FBSnapshotVerifyView(viewController.view, nil)</code> the reference snapshot is compared with the current UI of the view.</p>
+
+<p>Run the test. The test fails but it’s not clear why. In Xcode it looks like the test didn’t even run. Let’s have a look to the log output in the debug console. There is lots and lots of text. If you look closely, there is a hint what’s going on:</p>
+
+<blockquote>
+  <p>[…] Library not loaded: @rpath/libswiftCore.dylib […]</p>
+</blockquote>
+
+<p>So it seems the core lib for Swift isn’t loaded. This is strange, because we don’t even use Swift in the test or the production code.</p>
+
+<p>The reason seems to be that the framework iOSSnapshotTestCase has some Swift in it. So we need to tell the compiler that it should load the Swift core lib (and anything else it needs to run Swift). The easies way to do that is to create a Swift test case. Xcode will then ask you if it should create a Bridging Header. Click ‘Create Bridging Header’.</p>
+
+<p>Run the snapshot test again. The test will fail because <code class="highlighter-rouge">FBSnapshotVerifyView()</code> doesn’t find a reference snapshot to compare the view with. Open the directory of the test target in Finder. There is now a directory <code class="highlighter-rouge">ReferenceImages_64</code>. In this directory you can find all the snapshots recored in record mode.</p>
+
+<p>Now remove the line <code class="highlighter-rouge">self.recordMode = true;</code> from the test and run the test again. The test succeeds. Nice! From now on, whenever the UI of the login screen changes you will be notified by a failing test.</p>
+
+<h1 id="diff-images">Diff images</h1>
+
+<p>But how do we know that the snapshot test really works? Easy, let’s change the UI and see what happens. Replace the button title with ‘Login’.</p>
+
+<p>The test fails and there is a new directory with the name <code class="highlighter-rouge">FailureDiffs</code> in the directory of the test target. In this new directory you can find all diff images of the failing tests. In my case, the diff image looks like this:</p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/2018-07-22/05.png" alt="The diff image" /></p>
+
+<p>Awesome! With this image it should be easy to find the change in the UI that made the test fail.</p>
+:ET

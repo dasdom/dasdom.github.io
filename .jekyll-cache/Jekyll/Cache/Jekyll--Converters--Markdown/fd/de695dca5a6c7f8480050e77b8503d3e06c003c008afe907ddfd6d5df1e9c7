@@ -1,0 +1,29 @@
+I"-<p>Xcode has a feature called Behaviors. You can find it `Xcode&gt;Behaviors&gt;Edit Behaviors`. The Behaviors manages the different contexts of Xcode. I use them to switch editors and navigators for different stages of Xcode. Here are my Behaviors (for some of them you need to name you tabs [like I did](http://dasdev.de/2014/01/18/xcode-tabs/)):</p>
+<p>- Build<br />
+  - Starts<br />
+    - Show tab named Log in active window<br />
+    - Show navigator: Log Navigator<br />
+    - Navigate to current log<br />
+  - Generates new issue<br />
+    - Show navigator: Issue Navigator<br />
+    - navigate to first new issue<br />
+- Testing<br />
+  - Starts<br />
+    - Show tab named Testing in active window<br />
+  - Generates new issue<br />
+    - Show tab named Testing in active window<br />
+    - Show navigator: Issue Navigator<br />
+    - navigate to first new issue<br />
+- Running<br />
+  - Starts<br />
+    - Show tab named Debug in active window<br />
+  - Pauses<br />
+    - Show navigator: Debug Navigator<br />
+    - Show debugger with Current Views<br />
+  - Generates output<br />
+    - Show debugger with Current Views<br />
+  - Completes<br />
+    - Show tab names Main in active window<br />
+    - If no output, hide debugger</p>
+<p>Comments about this post? I am [@dasdom](https://alpha.app.net/dasdom).</p>
+:ET

@@ -1,0 +1,6 @@
+I"J<p>Let’s say you have three subviews in a view. Two subviews at the top and
+the third one below. The views at the top can have different heights and
+it’s not clear which one is taller. Now we want to have the Auto Layout
+to manage that the distance of the view at the bottom to the views at
+the top is at least 10 points.</p>
+:ET

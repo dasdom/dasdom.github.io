@@ -1,0 +1,18 @@
+I"G<p>In the Phy Update Diary I'm writing about the process of updating the first App I have ever put into the App Store.</p>
+<p>The formulas in [Phy](https://itunes.apple.com/de/app/phy-physics-formulas-calculator/id325836855?l=en&amp;mt=8) are png images created using LaTeX. I used LaTeX because the formulas then look so good. Here is an example:</p>
+<pre class="lang:tex decode:true ">documentclass{article}
+usepackage{amsmath}
+begin{document}
+pagestyle{empty}
+hoffset = -5cm
+voffset = -4.2cm
+$F = gamma frac{m _1 , m _2}{r ^{2}} , frac{vec r}{| vec r |}$ 
+end{document}</pre>
+<p>creates</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2015/01/gravitationskraft@3x.png"><img src="/assets/gravitationskraft@3x-300x66.png" alt="gravitationskraft@3x" width="300" height="66" class="aligncenter size-medium wp-image-453" /></a></p>
+<p>(Fun fact: While putting together this blog post I realized that his formula is wrong. There is a vector sign missing on the `F`. :))</p>
+<p>I already have the pngs for the formulas in the current version but for the update I need to have in addition @3x version for the iPhone 6 and the iPhone 6+. When Apple released the iPhone 4 with its Retina display I had the same problem (yes, Phy is that old). To create the @2x (and now the @3x images) I used a shell script that takes all `.tex` files and creates images with different resolutions (essentially it just changes the DPI of the output).</p>
+<p>Here is the script to generate the @2x and the @3x images an copy them to the project folder.</p>
+<pre class="lang:sh decode:true ">#!/bin/bash
+</pre>
+:ET

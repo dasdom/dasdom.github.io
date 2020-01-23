@@ -1,0 +1,94 @@
+I"}<blockquote>
+  In the Phy Update Diary I'm writing about the process of updating the first App I have ever put into the App Store.
+&lt;/p&gt;</blockquote>
+<p>As I wrote in an <a href="http://swiftandpainless.com/2015/02/phy-update-diary-a-fresh-start/">earlier post</a> I'm back using XCTest for the unit tests of Phy.</p>
+<p>Phy has a calculator. The calculator in the current version in the App Store has quite annoying bugs. For example you can input numbers like <code>12.34.56.78</code>. As I started the next version from scratch I have the opportunity to fix the known bugs right from the beginning.</p>
+<p>The calculator in Phy is different than most calculators. You put in the whole string you want to calculate. For example it can calculate a string like <code>1+2+sin(0.3)×2×(3.33-4)</code>. The current input position is shown by an underscore that can be moved to allow input at the beginning or the middle of the calculation string. For example if the input field shows <code>1+2.3_-15</code> and you touch the 4 you get <code>1+2.34_-15</code>.</p>
+<p>This means to make sure the user can't put in numbers like <code>12.34.56.78</code>, the app has to check if the cursor is within a number that already has a decimal delimiter every time the user adds something to the calculation string. This is a great use case for unit tests. Before I started the implementation of the feature I wrote this test:</p>
+<pre class="lang:swift decode:true ">func testDecimalDelimiterCanNotBeAddedIfThereIsAlreadyOneInTheNumberAtCursorPosition() {
+    viewModel.addElement("1")
+    viewModel.addElement("+")
+    viewModel.addElement("1")
+    viewModel.addElement("2")
+    viewModel.addElement(".")
+    viewModel.addElement("1")
+    
+    var (attributedResultString, result) = viewModel.addElement(".")
+    XCTAssertEqual(attributedResultString.string, "1+12.1_")
+    
+    viewModel.attributedStringByMovingCursorLeft()
+    (attributedResultString, result) = viewModel.addElement(".")
+    XCTAssertEqual(attributedResultString.string, "1+12._1")
+    
+    viewModel.attributedStringByMovingCursorLeft() 
+    viewModel.attributedStringByMovingCursorLeft()
+    viewModel.attributedStringByMovingCursorLeft()
+    viewModel.attributedStringByMovingCursorLeft()
+    (attributedResultString, result) = viewModel.addElement(".")
+    XCTAssertEqual(attributedResultString.string, "1._+12.1")
+    
+    
+    viewModel.attributedStringByMovingCursorLeft()
+    viewModel.attributedStringByMovingCursorLeft()
+    (attributedResultString, result) = viewModel.addElement("1")
+    XCTAssertEqual(attributedResultString.string, "1_1.+12.1")
+    
+    (attributedResultString, result) = viewModel.addElement(".")
+    XCTAssertEqual(attributedResultString.string, "1_1.+12.1")
+}</pre>
+<p>(I know, one should not have several tests within a test method. But in this case they all test the same thing: Test if the addition of a decimal delimiter follows the rules. Maybe I should refactor the test into two tests.)</p>
+<p>The calculator has a view model that is responsible for handling the calculation string. To add something to the calculation string the method <span class="lang:swift decode:true  crayon-inline ">addElement(element: String)</span> is called. The method  <span class="lang:swift decode:true  crayon-inline ">attributedStringByMovingCursorLeft()</span> moves the cursor left and returns the current attributed calculation string. This is an attributed string because it's color coded to show the user matching parentheses.</p>
+<p>The check whether a decimal delimiter can be added to the string has to be done in <span class="lang:swift decode:true  crayon-inline ">addElement(element: String)</span>:</p>
+<pre class="lang:swift decode:true ">public func addElement(element: String) -&gt; (attributedCalcString: NSAttributedString, result: Double) {
+    
+    var localElement = element
+    if localElement == DecimalDelimiterString {
+        if !canAddDecimalDelimiterAtCursorPosition() {
+            localElement = ""
+        }
+    }
+    
+    ...
+}</pre>
+<p>Here is how <span class="lang:swift decode:true  crayon-inline ">canAddDecimalDelimiterAtCursorPosition()</span> is implemented:</p>
+<pre class="lang:swift decode:true ">private func canAddDecimalDelimiterAtCursorPosition() -&gt; Bool {
+    let string = attributedString.string
+    let range = string.rangeOfString(kCursorString, options: nil, range: nil)!
+    
+    var canAddDecimalDelimiter = true
+    var isDigit = true
+    var position = range.startIndex
+    do {
+        if position == string.startIndex {
+            isDigit = false
+        } else {
+            position = position.predecessor()
+            isDigit = string.hasDigitAtIndex(position)
+            if !isDigit {
+                canAddDecimalDelimiter = !string.hasDecimalDelimiterAtIndex(position)
+            }
+        }
+    } while isDigit
+    
+    if canAddDecimalDelimiter {
+        isDigit = true
+        position = range.startIndex
+        do {
+            if position == string.endIndex {
+                isDigit = false
+            } else {
+                position = position.successor()
+                isDigit = string.hasDigitAtIndex(position)
+                if !isDigit {
+                    canAddDecimalDelimiter = !string.hasDecimalDelimiterAtIndex(position)
+                }
+            }
+        } while isDigit
+    }
+    
+    return canAddDecimalDelimiter
+}</pre>
+<p>This method propagates from the position of the cursor left and right as long as there are digits. If it finds a decimal delimiter it returns false.</p>
+<p>Without unit tests the implementation would have taken a lot longer because I did not have to navigate to the calculator and put in the test string by tapping the numbers and callsigns on the calculator user interface.</p>
+<p><strong>What do you think about the test? And do you have a better (maybe swifter) implementation of <span class="lang:swift decode:true  crayon-inline ">canAddDecimalDelimiterAtCursorPosition()</span>?</strong></p>
+:ET

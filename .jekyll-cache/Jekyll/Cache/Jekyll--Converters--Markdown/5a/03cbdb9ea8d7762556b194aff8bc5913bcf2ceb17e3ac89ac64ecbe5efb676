@@ -1,0 +1,168 @@
+I"d-<p>Did you know that you can create your own file templates for Xcode? Sure you did. But did you also know that you can create a template that takes a string and puts it into a field you define?</p>
+
+<p>Let’s build a file template for a Swift protocol and a protocol extension.</p>
+
+<h2 id="create-a-file-template">Create a file template</h2>
+
+<p>First things first.</p>
+
+<p>Xcode looks for your custom templates at the location <code class="highlighter-rouge">~/Library/Developer/Xcode/Templates/</code>. We will start by copying a template that comes with Xcode to that location.
+<!--more-->
+Open Terminal.app and create a directory for your custom templates like this:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">mkdir</span> <span class="nt">-p</span> ~/Library/Developer/Xcode/Templates/File<span class="se">\ </span>Templates/Mine</code></pre></figure>
+
+<p>Next copy the template for Swift file to the new folder:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cp</span> <span class="nt">-R</span> /Applications/Xcode.app/Contents/Developer/Library/Xcode/Templates/File<span class="se">\ </span>Templates/Source/Swift<span class="se">\ </span>File.xctemplate/ ~/Library/Developer/Xcode/Templates/File<span class="se">\ </span>Templates/Mine/Protocol<span class="se">\ </span>with<span class="se">\ </span>Extension.xctemplate</code></pre></figure>
+
+<p>When you now create a new file in Xcode, you find the new template in its own section:</p>
+
+<p><img src="/assets/new_template_in_xcode.png" alt="" /></p>
+
+<p>But this is only the normal Swift file template. We want something better. Open <code class="highlighter-rouge">___FILEBASENAME___.swift</code> in Xcode by putting the following into Terminal.app:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">open ~/Library/Developer/Xcode/Templates/File<span class="se">\ </span>Templates/Mine/Protocol<span class="se">\ </span>with<span class="se">\ </span>Extension.xctemplate/___FILEBASENAME___.swift</code></pre></figure>
+
+<p>Replace its contents with this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="c1">//  Created by ___FULLUSERNAME___ on ___DATE___.</span>
+<span class="c1">//___COPYRIGHT___</span>
+
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">protocol</span> <span class="n">___FILEBASENAMEASIDENTIFIER___</span> <span class="p">{</span>
+
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="n">___FILEBASENAMEASIDENTIFIER___</span> <span class="p">{</span>
+
+<span class="p">}</span></code></pre></figure>
+
+<p>Now, open an Xcode project and create a file using your new template. Call it <strong>Foo.swift</strong> and click <strong>Create</strong>.</p>
+
+<p>Xcode creates the following file:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="c1">//  Created by dasdom on 08/08/16.</span>
+<span class="c1">//  Copyright © 2016 dasdom. All rights reserved.</span>
+
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">protocol</span> <span class="kt">Foo</span> <span class="p">{</span>
+  
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">Foo</span> <span class="p">{</span>
+  
+<span class="p">}</span></code></pre></figure>
+
+<p>Nice! But we can do more. Let’s say we want to have a template that creates a protocol and an extension with one method. To be able to do that, we need options.</p>
+
+<h2 id="options">Options</h2>
+
+<p>Open <strong>TemplateInfo.plist</strong> and add an <strong>Options</strong> array. Fill in the values that the plist looks like this:</p>
+
+<p><img src="/assets/template_info_plist.png" alt="" /></p>
+
+<p>If you prefere your plists in source code form the complete plist looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="cp">&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;</span>
+<span class="nt">&lt;plist</span> <span class="na">version=</span><span class="s">"1.0"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;dict&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Kind<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>Xcode.IDEFoundation.TextSubstitutionFileTemplateKind<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Description<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>An empty Swift file.<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Summary<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>An empty Swift file<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>SortOrder<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>5<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>AllowedTypes<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;array&gt;</span>
+                <span class="nt">&lt;string&gt;</span>public.swift-source<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/array&gt;</span>
+        <span class="nt">&lt;key&gt;</span>DefaultCompletionName<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>File<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>MainTemplateFile<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;string&gt;</span>___FILEBASENAME___.swift<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;key&gt;</span>Options<span class="nt">&lt;/key&gt;</span>
+        <span class="nt">&lt;array&gt;</span>
+                <span class="nt">&lt;dict&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Identifier<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>productName<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Required<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;true/&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Name<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>Protocol:<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Description<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>The name of the protocol to create<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Type<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>text<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>NotPersisted<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;true/&gt;</span>
+                <span class="nt">&lt;/dict&gt;</span>
+                <span class="nt">&lt;dict&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Description<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>Method<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Identifier<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>Method<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Name<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>Method:<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Required<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>YES<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>Type<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;string&gt;</span>text<span class="nt">&lt;/string&gt;</span>
+                        <span class="nt">&lt;key&gt;</span>NotPersisted<span class="nt">&lt;/key&gt;</span>
+                        <span class="nt">&lt;true/&gt;</span>
+                <span class="nt">&lt;/dict&gt;</span>
+        <span class="nt">&lt;/array&gt;</span>
+<span class="nt">&lt;/dict&gt;</span>
+<span class="nt">&lt;/plist&gt;</span></code></pre></figure>
+
+<p>With this you have added two text fields to the file creation process. The first is for the name of the file/protocol. The second will be used to generate a method in the protocol and the extension. Don’t forget to save the plist file.</p>
+
+<p>When Xcode creates the file, it uses the values in the text fields and puts them into placeholders in the file template. To see how this works, open <code class="highlighter-rouge">___FILEBASENAME___.swift</code> again and replace its content with this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="c1">//  Created by ___FULLUSERNAME___ on ___DATE___.</span>
+<span class="c1">//___COPYRIGHT___</span>
+
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">protocol</span> <span class="n">___FILEBASENAMEASIDENTIFIER___</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="nf">___VARIABLE_Method___</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="n">___FILEBASENAMEASIDENTIFIER___</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="nf">___VARIABLE_Method___</span><span class="p">()</span> <span class="p">{</span>
+    
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Don’t forget to save the file.</p>
+
+<p>Now, open again an Xcode project, add a new file and select your template. An options window opens:</p>
+
+<p><img src="/assets/xcode_options_window.png" alt="" /></p>
+
+<p>Put in <strong>Foo</strong> for the protocol name and <strong>bar</strong> for the method and create the file. The generated code looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="c1">//  Created by dasdom on 08/08/16.</span>
+<span class="c1">//  Copyright © 2016 dasdom. All rights reserved.</span>
+
+<span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">protocol</span> <span class="kt">Foo</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="nf">bar</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">Foo</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="nf">bar</span><span class="p">()</span> <span class="p">{</span>
+    
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Nice! You have just created a template that can create a protocol with an extension and a method. I’m sure, you will find lot’s of other useful templates to create. Also have a look at the templates provided by Apple to find out what’s possible.</p>
+
+<p>I’d love to read your feedback about this. You can find me on <a href="https://twitter.com/dasdom">Twitter</a>.</p>
+:ET

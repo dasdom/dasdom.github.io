@@ -1,0 +1,13 @@
+I"j<p>As described in the previous post I had to get the data out of the plist which is used in the current version of Phy and put it into the Realm database. As the structure of the plist reflects the very limited knowledge I had when I started with iPhone Os development in 2009, I first had to remove all the unneeded information. To do that I wrote a Swift script which opens the plist as a dictionary and walks through the data and puts the needed information into another much cleaner plist.</p>
+<p>This cleaner plist represents the data of the app and a starting point for future additions of formulas.</p>
+<p>But within the app I wanted to use Realm as the database. So I needed to find a way to get the data out of the plist into the realm db.</p>
+<p>First I thought I could use a Swift Playground. So I added Realm to the frameworks path of Xcode. This allowed to import Realm but whenever I tried to add a Realm object to the Playground, it stopped executing. Realm needs libc++. So maybe this lib is missing in Playgrounds. I don't know and I don't want to figure out at the moment.</p>
+<p>So the next idea was to use a command line tool to fill it. And this is what I did. I added the OS X Realm framework and the realm model from the iOS App to the Mac app and implemented the code to fill the Realm database. This is the function that does the main work:</p>
+<pre class="lang:swift decode:true ">func fillRealmDBFrom(array: [[String:AnyObject]], categoryName: String) -&gt; RLMArray {
+    
+    var resultArray = RLMArray(objectClassName: Object.className())
+    
+    for dictionary in array {
+        let object = Object()
+</pre>
+:ET

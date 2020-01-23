@@ -1,0 +1,11 @@
+I"Ù<p>How I split delegate/data source and view controller of <code>UICollectionView</code>s.</p>
+<p>Recently I started to split the view controller of a <code>UICollectionView</code> and its delegate and data source. The delegate and data source are put into the same class which is a subclass of <code>NSObject</code>. In the view controller the collection view is defined within <code>loadView:</code> (I don't like Interface Builder and therefore construct the views in code) and the delegate and data source is set:<br />
+[code language="objc" light="true"]<br />
+- (void)loadView {<br />
+    CGRect frame = [[UIScreen mainScreen] applicationFrame];<br />
+    UIView *contentView = [[UIView alloc] initWithFrame:frame];</p>
+<pre><code>UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+_collectionView = [[UICollectionView alloc] initWithFrame:frame 
+                                     collectionViewLayout:collectionViewFlowLayout];
+</code></pre>
+:ET

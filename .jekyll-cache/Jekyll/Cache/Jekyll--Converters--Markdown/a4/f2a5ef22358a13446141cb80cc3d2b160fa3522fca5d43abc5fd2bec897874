@@ -1,0 +1,12 @@
+I"¬<p>Extensions are one of the coolest new features in iOS8. Nearly every iOS developer (and user) has waited for this for a long time. Finally very [convenient scenarios](http://oleb.net/blog/2014/06/the-power-of-ios8/) come true. In fact [AgileBits](http://agilebits.com/) (creator of 1Password) has already [published](https://github.com/AgileBits/onepassword-app-extension) a class to integrate 1Password extension support into every App. This is really cool.</p>
+<p>Now let's say we want to build a share extension for a social networking App. To post to the social network the user has to be logged in (usually this means the user needs a valid access token). We don't want to force the user to log into the network twice. We want to share the access token between the App and the extension. How can we do this?</p>
+<p>One possibility is to use a shared user defaults. But in this case the access token would be stored unencrypted on the device. This is not a good idea.</p>
+<p>What we need is to store the access token in the keychain of iOS and access this keychain from the App and the extension. Let's do exactly this. (The demo project is on [github](https://github.com/dasdom/KeychainDemo).)</p>
+<p>&gt; As far as I understand it, I'm not allowed to show screenshots from Xcode 6 and iOS8 because those are still under NDA. I will update this post with screenshots when the NDA is lifted.</p>
+<p>Open Xcode6 and create a new project. Select the Single View Application template. Chose a name, select the language Swift and select iPhone as the target device.</p>
+<p>We need to access the keychain in the App and in the extension. Therefore the code to do that needs to be accessible from both targets. This is the perfect use case for a framework.<br />
+In the project navigator select the project. Add a new target to the project and make it framework. Chose the name KeychainAccess. Let the 'Project' and the 'Embed in Application' as it is.</p>
+<p>In the project navigator navigate to the folder KeychainAccess. Add a file to this folder. Select an iOS-Swift file and name it KeychainAccess.swift. Replace the content of the file with this:</p>
+<pre class="lang:swift decode:true ">import Foundation
+</pre>
+:ET

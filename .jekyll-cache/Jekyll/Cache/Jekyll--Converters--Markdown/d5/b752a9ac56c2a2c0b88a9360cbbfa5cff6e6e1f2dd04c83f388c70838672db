@@ -1,0 +1,20 @@
+I"<p>You sure know all the operator `?:`. With this operator the code snippet</p>
+<p>[code language="objc"]<br />
+int x;<br />
+if (y) {<br />
+    x = y;<br />
+} else {<br />
+    x = z;<br />
+}<br />
+[/code]</p>
+<p>is equivalent to</p>
+<p>[code language="objc"]<br />
+int x = y ? y : z;<br />
+[/code]</p>
+<p>But did you know that you can write that even shorter? When you look at the last code snippet the condition (`y`) is the same as the value we want to assign to `x`. In this case this can be written as</p>
+<p>[code language="objc"]<br />
+int x = y ?: z;<br />
+[/code]</p>
+<p>And this is good because as a software developer you Don't want to Repeat Yourself (the DRY principle).</p>
+<p>Any comments about this post? I am [@dasdom](https://alpha.app.net/dasdom).</p>
+:ET

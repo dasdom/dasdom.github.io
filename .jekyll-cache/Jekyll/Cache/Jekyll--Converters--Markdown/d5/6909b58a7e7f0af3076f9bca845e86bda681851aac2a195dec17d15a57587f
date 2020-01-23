@@ -1,0 +1,48 @@
+I"W<p>Even with the improvements of the Interface Builder in the last years I still prefer doing iOS interfaces in code. Here is why:</p>
+<h2 id="context-shift">Context shift</h2>
+
+<p>I’m a coder. What I do best is coding. When ever I switch from code to Interface Builder I have to switch context. Interface Builder is visual. There are many places where I have to change something to get the desired look. The mouse pointer has to move long distances on screen.</p>
+
+<h2 id="less-conflicts">Less conflicts</h2>
+
+<p>I still encounter merge conflicts for storyboards when working with others on the same project.</p>
+
+<h2 id="options-all-over-the-place">Options all over the place</h2>
+
+<p>The elements in iOS become more and more complex. This means there are many options for interface elements. In Interface Builder you have to click through all the inspectors to find what you are searching for. When writing code most of the times I already know the first characters for what I’m trying to do and autocompletion does the rest.</p>
+
+<h2 id="easier-get-help">Easier get help</h2>
+
+<p>It’s easier to post code than screenshots in case you need help on StackOverflow ;). If you find code on Github you can see without downloading how the interface is build.</p>
+
+<h2 id="no-betas-for-you">No betas for you</h2>
+
+<p>I had a few times that a project could not be opened by Xcode when I opened it in a beta of Xcode because the Interface Builder file structure had been changed.</p>
+
+<h2 id="no-refactoring">No refactoring</h2>
+
+<p>Code is easier to refactor than storyboards.</p>
+
+<h2 id="no-inheritance">No inheritance</h2>
+<p>It is impossible to inherit from a storyboard scene. In code you can easily make subclasses to reuse code. Using a storyboard you have to make two scenes even if they share 90% of their UI elements.</p>
+
+<h2 id="harder-to-dry">Harder to DRY</h2>
+
+<p>At work I’m working on an app that has 8 targets right now (more to come). Each target has several storyboards. Differences in the interface for the different targets are managed in the different storyboards. It turned out that this isn’t a good idea. We had to fix one layout bug in 16 storyboard scenes (8 universal targets). And this happens again and again. We are right now moving most of the more complex user interfaces to code to prevent repeating ourselves.</p>
+
+<h2 id="layout-constraints">Layout constraints</h2>
+
+<p>For me it’s easier to see all the constrains of a view in code. In Interface Builder I have to open the size inspector to see the constraints. And then I see the constraints of one view. And each row is one single constraint. In code when using visual format language there are several constraints in one string. For example the visual format language sting  <code class="highlighter-rouge">"|-[nameLabel]-[button(30)]-|"</code>  represents 4 constraints on three interface elements. In combination with layout format options the layout becomes much easier to understand. At least for me.</p>
+
+<h2 id="performance-performance-performance">Performance Performance Performance</h2>
+
+<p>I use a MacBook Air (Early 2015) for development. The performance of Interface Builder on that machine is far from acceptable. Here are two examples (using Xcode 6.3.2) from a real project I’m working on right now:</p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/open_interface_builder.gif" alt="Switching from the code editor to Interface Builder" /></p>
+
+<p style="text-align: center;"><img src="http://localhost:4000/assets/select_view.gif" alt="Switching from the code editor to Interface Builder" /></p>
+
+<p>One could argue that a MBA isn’t the right machine for a developer. But in my opinion a slow machine should slow down compilation and not editing code or user interface.</p>
+
+<p>I would love to hear/read what you think. Ping my on <a href="https://twitter.com/dasdom">Twitter</a>.</p>
+:ET

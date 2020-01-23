@@ -1,0 +1,3 @@
+I"¤<p>In iOS8 `UITableViewCells` don't have a default size. This is because they use the auto layout constraints to calculate the height. If you use <span class="lang:objc decode:true  crayon-inline ">func tableView(tableView: UITableView!, heightForRowAtIndexPath indexPath: NSIndexPath!) -&gt; CGFloat</span> to define the height, you are fine.</p>
+<p>Therefore, if you can't see any cells in your table view after compiling for iOS8, you maybe have to add a height constraint to your table view or implement <span class="lang:objc decode:true  crayon-inline ">func tableView(tableView: UITableView!, heightForRowAtIndexPath indexPath: NSIndexPath!) -&gt; CGFloat</span>. </p>
+:ET

@@ -1,0 +1,7 @@
+I"½<p>Swift's type system is a source of frustration and not few developer state that it solves a problem nobody had. In my opinion it's useful mainly for beginners. It helps to find misunderstandings of Cocoa APIs and other people's code early. But I also think that the influence on the number of bad bugs in shipped apps is low. Most of the prevented errors are so obvious that they get caught during debug runs.</p>
+<p>But a few days ago I stubbled across a feature of Swift's type system that blew my mind.</p>
+<p>You sure have seen already this kind of type inference:</p>
+<pre class="lang:swift decode:true ">func aNumber() -&gt; Int { return 1 }
+func aNumber() -&gt; Double { return 2.0 }
+</pre>
+:ET

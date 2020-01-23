@@ -1,0 +1,123 @@
+I"t4<p>If you follow this blog for some time you might have realized that one
+of my favorite testing problems is the stubbing of <code class="highlighter-rouge">NSURLSession</code>.</p>
+
+<p>In case you are not familiar with the terms, stubbing means to fake the
+answer of a method. In the case of <code class="highlighter-rouge">NSURLSession</code> this means that we fake
+the web API response. This has several advantages. For example:</p>
+
+<ol>
+  <li>We don’t need a working web API to developer the network requests of
+our app.</li>
+  <li>The response is instantaneous. This results in a faster
+feedback loop.</li>
+  <li>The tests can run on a computer that has no internet connection.</li>
+</ol>
+
+<p>Normally the stubbing of <code class="highlighter-rouge">NSURLSession</code> requests is done using
+<code class="highlighter-rouge">NSURLProtocol</code>. Libs doing that are for example
+<a href="https://github.com/AliSoftware/OHHTTPStubs">OHHTTPStubs</a> and
+<a href="https://github.com/kylef/Mockingjay">Mockingjay</a>. The advantage of
+using <code class="highlighter-rouge">NSURLProtocol</code> is, that the stubbing also works when using libs as
+<a href="https://github.com/Alamofire/Alamofire">Alamofire</a> for the network
+requests. This works great but for me this is to much code. I would have
+to study and understand that code to get the desired confidence im my
+tests.
+<!--more--></p>
+
+<h2 id="an-easy-solution">An easy solution</h2>
+
+<p>I use <code class="highlighter-rouge">NSURLSession</code> for my network requests. Here is how I stub my
+requests.</p>
+
+<p>To make it easier, I have written a mock class for <code class="highlighter-rouge">NSURLSession</code> and a
+protocol. All that together looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">import</span> <span class="kt">Foundation</span>
+
+<span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">DHURLSession</span> <span class="p">{</span>
+  <span class="kd">func</span> <span class="nf">dataTaskWithURL</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">NSURL</span><span class="p">,</span>
+    <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">(</span><span class="kt">NSData</span><span class="p">?,</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="kt">NSError</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSURLSessionDataTask</span>
+  <span class="kd">func</span> <span class="nf">dataTaskWithRequest</span><span class="p">(</span><span class="nv">request</span><span class="p">:</span> <span class="kt">NSURLRequest</span><span class="p">,</span>
+    <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">(</span><span class="kt">NSData</span><span class="p">?,</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="kt">NSError</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSURLSessionDataTask</span>
+<span class="p">}</span>
+
+<span class="kd">extension</span> <span class="kt">NSURLSession</span><span class="p">:</span> <span class="kt">DHURLSession</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="kt">URLSessionMock</span> <span class="p">:</span> <span class="kt">DHURLSession</span> <span class="p">{</span>
+  
+  <span class="k">var</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">NSURL</span><span class="p">?</span>
+  <span class="k">var</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSURLRequest</span><span class="p">?</span>
+  <span class="kd">private</span> <span class="k">let</span> <span class="nv">dataTaskMock</span><span class="p">:</span> <span class="kt">URLSessionDataTaskMock</span>
+  
+  <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="kt">NSData</span><span class="p">?,</span> <span class="nv">response</span><span class="p">:</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">NSError</span><span class="p">?)</span> <span class="p">{</span>
+    <span class="n">dataTaskMock</span> <span class="o">=</span> <span class="kt">URLSessionDataTaskMock</span><span class="p">()</span>
+    <span class="n">dataTaskMock</span><span class="o">.</span><span class="n">taskResponse</span> <span class="o">=</span> <span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+  <span class="p">}</span>
+  
+  <span class="kd">public</span> <span class="kd">func</span> <span class="nf">dataTaskWithURL</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">NSURL</span><span class="p">,</span>
+    <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">(</span><span class="kt">NSData</span><span class="p">?,</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="kt">NSError</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSURLSessionDataTask</span> <span class="p">{</span>
+      <span class="k">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+      <span class="k">self</span><span class="o">.</span><span class="n">dataTaskMock</span><span class="o">.</span><span class="n">completionHandler</span> <span class="o">=</span> <span class="n">completionHandler</span>
+      <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataTaskMock</span>
+  <span class="p">}</span>
+  
+  <span class="kd">public</span> <span class="kd">func</span> <span class="nf">dataTaskWithRequest</span><span class="p">(</span><span class="nv">request</span><span class="p">:</span> <span class="kt">NSURLRequest</span><span class="p">,</span>
+    <span class="nv">completionHandler</span><span class="p">:</span> <span class="p">(</span><span class="kt">NSData</span><span class="p">?,</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="kt">NSError</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSURLSessionDataTask</span> <span class="p">{</span>
+      <span class="k">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+      <span class="k">self</span><span class="o">.</span><span class="n">dataTaskMock</span><span class="o">.</span><span class="n">completionHandler</span> <span class="o">=</span> <span class="n">completionHandler</span>
+      <span class="k">return</span> <span class="k">self</span><span class="o">.</span><span class="n">dataTaskMock</span>
+  <span class="p">}</span>
+  
+  <span class="kd">final</span> <span class="kd">private</span> <span class="kd">class</span> <span class="kt">URLSessionDataTaskMock</span> <span class="p">:</span> <span class="kt">NSURLSessionDataTask</span> <span class="p">{</span>
+    
+    <span class="kd">typealias</span> <span class="kt">CompletionHandler</span> <span class="o">=</span> <span class="p">(</span><span class="kt">NSData</span><span class="o">!</span><span class="p">,</span> <span class="kt">NSURLResponse</span><span class="o">!</span><span class="p">,</span> <span class="kt">NSError</span><span class="o">!</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span>
+    <span class="k">var</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kt">CompletionHandler</span><span class="p">?</span>
+    <span class="k">var</span> <span class="nv">taskResponse</span><span class="p">:</span> <span class="p">(</span><span class="kt">NSData</span><span class="p">?,</span> <span class="kt">NSURLResponse</span><span class="p">?,</span> <span class="kt">NSError</span><span class="p">?)?</span>
+    
+    <span class="k">override</span> <span class="kd">func</span> <span class="nf">resume</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nf">completionHandler</span><span class="p">?(</span><span class="n">taskResponse</span><span class="p">?</span><span class="o">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">taskResponse</span><span class="p">?</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="n">taskResponse</span><span class="p">?</span><span class="o">.</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>So, the complete helper code I need to write my stubs is 47 lines of
+code. And all that code is easy to understand. No swizzling, not
+complicated methods. Nice!</p>
+
+<h2 id="the-usage">The usage</h2>
+
+<p>To be able to use the <code class="highlighter-rouge">NSURLSession</code> mock in the test, we need a way to
+inject the dependency into the code. One possibility is the usage of a
+lazy property:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">lazy</span> <span class="k">var</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">DHURLSession</span> <span class="o">=</span> <span class="kt">NSURLSession</span><span class="o">.</span><span class="nf">sharedSession</span><span class="p">()</span></code></pre></figure>
+
+<p>Then an example test would look like this:</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="kd">func</span> <span class="nf">testFetchingProfile_ReturnsPopulatedUser</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// Arrage</span>
+  <span class="k">let</span> <span class="nv">responseString</span> <span class="o">=</span> <span class="s">"{</span><span class="se">\"</span><span class="s">login</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">dasdom</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">id</span><span class="se">\"</span><span class="s">: 1234567}"</span>
+  <span class="k">let</span> <span class="nv">responseData</span> <span class="o">=</span> <span class="n">responseString</span><span class="o">.</span><span class="nf">dataUsingEncoding</span><span class="p">(</span><span class="kt">NSUTF8StringEncoding</span><span class="p">)</span><span class="o">!</span>
+  <span class="k">let</span> <span class="nv">sessionMock</span> <span class="o">=</span> <span class="kt">URLSessionMock</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">responseData</span><span class="p">,</span> <span class="nv">response</span><span class="p">:</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">error</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+  <span class="k">let</span> <span class="nv">apiClient</span> <span class="o">=</span> <span class="kt">APIClient</span><span class="p">()</span>
+  <span class="n">apiClient</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">sessionMock</span>
+  
+  <span class="c1">// Act</span>
+  <span class="n">apiClient</span><span class="o">.</span><span class="nf">fetchProfileWithName</span><span class="p">(</span><span class="s">"dasdom"</span><span class="p">)</span>
+  
+  <span class="c1">// Assert</span>
+  <span class="k">let</span> <span class="nv">user</span> <span class="o">=</span> <span class="n">apiClient</span><span class="o">.</span><span class="n">user</span>
+  <span class="k">let</span> <span class="nv">expectedUser</span> <span class="o">=</span> <span class="kt">User</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"dasdom"</span><span class="p">,</span> <span class="nv">id</span><span class="p">:</span> <span class="mi">1234567</span><span class="p">)</span>
+  <span class="kt">XCTAssertEqual</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">expectedUser</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I really like this approach because I can understand the mocking within
+a few minutes by scanning over 50 lines of code. There is no
+<code class="highlighter-rouge">NSURLProtocol</code> and not swizzling involved.</p>
+
+<p>The <code class="highlighter-rouge">NSURLSession</code> mock is on
+<a href="https://github.com/dasdom/DHURLSessionStub">github</a> and it’s also
+available via CocoaPods.</p>
+
+<p>Let me know what you think.</p>
+:ET

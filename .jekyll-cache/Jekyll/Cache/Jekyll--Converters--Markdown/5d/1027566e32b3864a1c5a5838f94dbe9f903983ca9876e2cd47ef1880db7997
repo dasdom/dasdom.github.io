@@ -1,0 +1,7 @@
+I"<p>Recently I watched a video by <a href="https://www.youtube.com/watch?v=Jzlz3Bx-NzM">Jon Reid</a>. Jon Reid explains how he uses unit tests to test networking code. This video was an eye opener for me. If you haven't watched it yet, do it now.</p>
+<p>Here is how his approach looks like in Swift using  <span class="lang:swift decode:true  crayon-inline ">NSURLSession</span>:</p>
+<p>First we need a property to inject the mock url session in the test:</p>
+<pre class="lang:swift decode:true ">
+public class Foo {
+</pre>
+:ET

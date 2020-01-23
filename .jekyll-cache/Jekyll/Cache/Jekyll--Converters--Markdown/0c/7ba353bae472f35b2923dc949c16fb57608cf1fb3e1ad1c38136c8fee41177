@@ -1,0 +1,10 @@
+I"K<p>To test core data code you have to set up a managed object context in the test fixture. There is a special store type you can use for that.</p>
+<pre class="lang:objc decode:true ">- (void)setUp {  
+    [super setUp];  
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:@[[NSBundle mainBundle]]];  
+    NSPersistentStoreCoordinator *storeCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel];  
+    XCTAssertTrue([storeCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:NULL] ? YES : NO, @&amp;quot;Should be able to add in-memory store&amp;quot;);  
+    _managedObjectContext = [[NSManagedObjectContext alloc] init];  
+    _managedObjectContext.persistentStoreCoordinator = storeCoordinator; 
+}</pre>
+:ET

@@ -1,0 +1,15 @@
+I"�<p>I’m often working on projects from other devs.
+Some of the projects are quite complicated and I have difficulties to remember all the view controllers.
+Here is a breakpoint that helps me a lot when figuring out what’s going on and where I need to fix a bug.</p>
+
+<p>The breakpoint prints the class name of the current view controller to the console.
+It’s a symbolic breakpoint on <code class="highlighter-rouge">-[UIViewController viewDidAppear:]</code> with the debugger command <code class="highlighter-rouge">po $arg1</code>.</p>
+
+<p>To have the breakpoint in all projects, move it to the User.
+This can be done by Crl click on the breakpoint and selecting <em>Move Breakpoint To / User</em>.</p>
+
+<p style="text-align: center;"><img src="../assets/2020-01-18/move_breakpoint_to_user.png" alt="" /></p>
+
+<p>Follow me on <a href="https://twitter.com/dasdom">Twitter</a>. <br />
+Check out my open source code at <a href="https://github.com/dasdom">Github</a>.</p>
+:ET

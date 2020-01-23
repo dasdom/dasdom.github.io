@@ -1,0 +1,12 @@
+I"&<p>Let's say you have an app with a text view which should just take all the space possible without being beneath the keyboard.</p>
+<p>Fist add constraints which pin the text view to all four edges of the super view.</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/11/Screen-Shot-2014-11-29-at-18.02.14.png"><img src="/assets/Screen-Shot-2014-11-29-at-18.02.14.png" alt="Screen Shot 2014-11-29 at 18.02.14" width="294" height="422" class="aligncenter size-full wp-image-369" /></a></p>
+<p> Ctr-drag from the bottom constraint to the view controller to make an outlet for the constraint. This will allow you to change the constant of the bottom constraint.</p>
+<p><a href="http://swift.eltanin.uberspace.de/wp-content/uploads/2014/11/Monosnap-2014-11-29-18-10-29.png"><img src="/assets/Monosnap-2014-11-29-18-10-29.png" alt="Monosnap 2014-11-29 18-10-29" width="1149" height="741" class="aligncenter size-full wp-image-372" /></a></p>
+<p>Add the view controller as an observer for the notification  <span class="lang:swift decode:true  crayon-inline ">UIKeyboardWillShowNotification</span> in <span class="lang:swift decode:true  crayon-inline ">viewDidLoad()</span> and set the constant of the bottom constraint to 0.0 to make the text view take all the available space at the beginning:</p>
+<pre class="lang:swift decode:true ">override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+</pre>
+:ET
