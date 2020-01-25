@@ -1,0 +1,19 @@
+I"S<p>Often during development, you need to populate the view controller with demo data.
+One solution is to add code that adds demo data to sequences used to present the data.
+But this means you have to change the code and remember to change it back when done.</p>
+
+<p>I often use a breakpoint for this.
+Using the keyword <code class="highlighter-rouge">e</code> (short for <code class="highlighter-rouge">expression</code>) you can execute code when the debugger hits the breakpoint.</p>
+
+<p>Let’s say we have a table view showing users.
+With the following lldb command we can add a user object to the <code class="highlighter-rouge">users</code> array in a breakpoint in <code class="highlighter-rouge">viewDidLoad</code>.</p>
+
+<figure class="highlight"><pre><code class="language-swift" data-lang="swift"><span class="n">e</span> <span class="n">users</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="kt">User</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Bla"</span><span class="p">,</span> <span class="nv">birthdate</span><span class="p">:</span> <span class="kt">Date</span><span class="p">()))</span></code></pre></figure>
+
+<p>You can even split the creation and the append up in two debugger commands like shown in the following screenshot.</p>
+
+<p style="text-align: center;"><img src="../assets/2020-01-25/breakpoint_to_populate.png" alt="" /></p>
+
+<p>Follow me on <a href="https://twitter.com/dasdom">Twitter</a>. <br />
+Check out my open source code at <a href="https://github.com/dasdom">Github</a>.</p>
+:ET

@@ -1,0 +1,4 @@
+I"<p>Often during development, you need to populate the view controller with demo data.
+One solution is to add code that adds demo data to sequences used to present the data.
+But this means you have to change the code and remember to change it back when done.</p>
+:ET
