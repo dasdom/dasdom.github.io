@@ -25,5 +25,8 @@ You can even split the creation and the appending in two debugger commands like 
 ![](../assets/2020-01-25/breakpoint_to_populate.png)
 {:refdef}
 
+Make sure that you check the box at *Automatically continue after evaluating actions*.
+Otherwise the debugger will stop at that breakpoint and you have to continue yourself.
+
 Follow me on [Twitter](https://twitter.com/dasdom).   
 Check out my open source code at [Github](https://github.com/dasdom).
