@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2019-08-25
+author: Dominik Hauser
 categories: Xcode, Regex
 title: "Search and Replace in Xcode"
 ---

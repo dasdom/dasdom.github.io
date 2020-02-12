@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2018-09-23
+author: Dominik Hauser
 categories: sketch notes
 title: "SwiftConf 2018 - Sketch Notes"
 ---

@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2019-08-09
+author: Dominik Hauser
 categories: iOS, Swift, Accessibility
 title: "Dynamic Type in UIButtos"
 ---

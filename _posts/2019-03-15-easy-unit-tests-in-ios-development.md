@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2019-03-16
+author: Dominik Hauser
 categories: TDD, iOS, Swift
 title: "Easy Unit Tests In iOS Development"
 ---

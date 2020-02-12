@@ -1,6 +1,7 @@
 ---
 layout: post
 title:  "Debugging View Layouts with Breakpoints"
+author: Dominik Hauser
 date:   2018-08-17
 categories: debugging
 ---

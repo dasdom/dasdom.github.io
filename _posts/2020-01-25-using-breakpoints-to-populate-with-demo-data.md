@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2020-01-25
+author: Dominik Hauser
 categories: Xcode, Breakpoint
 title: "Using breakpoints to populate with demo data"
 ---

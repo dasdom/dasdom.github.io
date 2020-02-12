@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2020-01-18
+author: Dominik Hauser
 categories: Xcode, Breakpoint
 title: "A breakpoint I cannot live without"
 ---

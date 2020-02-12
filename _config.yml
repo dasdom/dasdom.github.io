@@ -13,7 +13,7 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Dasdom Dev Blog
+title: dasdom
 email: 
 description: >- # this means to ignore newlines until "baseurl:"
   A blog about iOS development, Objective-C and Swift.
@@ -28,22 +28,38 @@ twitter:
 
 # Build settings
 markdown: kramdown
-theme: minima
+#theme: minima
+#theme: texture
+#theme: plainwhite
+theme:      tale
+#remote_theme: thelehhman/texture
+#remote_theme: thelehhman/plainwhite-jekyll
+remote_theme: chesterhow/tale
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-remote-theme
+
 header_pages:
-  - impress.md
+  - imprint.md
   - privacy_policy.html
 show_excerpts: true
 
-mimima:
+plainwhite:
+#texture:
+  title: dasdom
+  tagline: A blog about iOS development
+  showNav: true
+  style: black
+#mimima:
   social-links:
     twitter: dasdom
     github: dasdom
     instagram: swiftandpainless
 
 permalink: /:title/
+paginate: 5
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

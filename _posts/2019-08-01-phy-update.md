@@ -1,6 +1,7 @@
 ---
 layout: post
 date: 2019-08-01
+author: Dominik Hauser
 categories: iOS, ObjC, Update
 title: "Phy Update"
 ---
