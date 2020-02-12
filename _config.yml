@@ -31,7 +31,7 @@ markdown: kramdown
 #theme: minima
 #theme: texture
 #theme: plainwhite
-theme:      tale
+#theme:      tale
 #remote_theme: thelehhman/texture
 #remote_theme: thelehhman/plainwhite-jekyll
 remote_theme: chesterhow/tale
