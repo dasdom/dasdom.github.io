@@ -1,14 +1,14 @@
 ---
 layout: post
-title: Source Tools
-permalink: /sourcetools/
+title: Swift Tools
+permalink: /swifttools/
 ---
 
-# Source Tools (Xcode Source Editor Extension)
+# Swift Tools (Xcode Source Editor Extension)
 
 ## Privacy Policy
 
-Source Tools for Xcode does not collect any data.
+Swift Tools for Xcode does not collect any data.
 
 ## Third party code
 
