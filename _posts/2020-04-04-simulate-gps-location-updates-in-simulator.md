@@ -3,7 +3,7 @@ layout: post
 date: 2020-04-04
 author: Dominik Hauser
 categories: Xcode, Simulator
-title: "Simulate GPS Location Updates in the iOS Simulator"
+title: "Simulating GPS Location Updates in the iOS Simulator"
 ---
 
 Sometimes when building an iOS app you need to simulate moving around.
@@ -12,7 +12,7 @@ It would be difficult to move around with your iOS device connected to Xcode to 
 
 Fortunately the iOS simulator can simulate location changes as if the user would do a city run or a free way drive.
 
-## Simulate a City Run Around Cupertino
+## Simulating a City Run Around Cupertino
 
 Build and run your app on the iOS simulator and select the menu item *Features / Location / City Run*.
 
@@ -23,7 +23,7 @@ Build and run your app on the iOS simulator and select the menu item *Features /
 The simulator delivers location updates as if the device would move during a city run around Cupertino.
 But sometimes you need more.
 
-## Simulate a Specific Path
+## Simulating a Specific Path
 
 If you need to simulate a specific path, you can add a gpx file to the project and select this in Xcode when the app runs in the simulator.
 Such a gpx file could look like this:
