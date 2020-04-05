@@ -7,6 +7,11 @@ permalink: /books/
 
 I write books about iOS development.
 
+## Comming Up
+
+Right now I'm writing a book about using GPS and sensor data in apps.
+Stay tuned.
+
 ## Test-Driven iOS Development - Gimme The Code
 
 [Get it on Leanpub](https://leanpub.com/tdd_ios_gimme_the_code).
