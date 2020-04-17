@@ -3,7 +3,7 @@ layout: post
 date: 2020-04-17
 author: Dominik Hauser
 categories: Quick Tip, Accessibility
-title: "Quick Tip: Accessibility Zoom"
+title: "Quick Tip: Accessibility Zoom to Debug Layout"
 ---
 
 Sometimes during the development of an iOS app, you need to figure out, how many pixels are between two views.
