@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: page
 title: Books
 author: Dominik Hauser
 permalink: /books/

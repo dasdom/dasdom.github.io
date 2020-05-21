@@ -43,9 +43,9 @@ plugins:
 
 header_pages:
   - imprint.md
-#  - privacy.md
-#  - books.md
-#  - about.md
+  - privacy.md
+  - books.md
+  - about.md
 show_excerpts: true
 
 #plainwhite:
