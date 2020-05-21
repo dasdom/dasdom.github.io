@@ -7,10 +7,15 @@ permalink: /books/
 
 I write books about iOS development.
 
-## Comming Up
+## Build Location-Based Projects for iOS
 
-Right now I'm writing a book about using GPS and sensor data in apps.
-Stay tuned.
+Coding is awesome. So is being outside. With location-based iOS apps, you can combine the two for an enhanced outdoor experience. Use Swift to create your own apps that use GPS data, read sensor data from your iPhone, draw on maps, automate with geofences, and store augmented reality world maps. You’ll have a great time without even noticing that you’re learning. And even better, each of the projects is designed to be extended and eventually submitted to the App Store. Explore, share, and have fun.
+
+[Get it from Pragmatic Programmers](https://pragprog.com/book/dhios/build-location-based-projects-for-ios)
+
+{:refdef: style="text-align: center;"}
+![](../assets/general/build_location_based_projects.png)
+{:refdef}
 
 ## Test-Driven iOS Development - Gimme The Code
 
