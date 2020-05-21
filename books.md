@@ -14,7 +14,7 @@ Coding is awesome. So is being outside. With location-based iOS apps, you can co
 [Get it from Pragmatic Programmers](https://pragprog.com/book/dhios/build-location-based-projects-for-ios)
 
 {:refdef: style="text-align: center;"}
-![](../assets/general/build_location_based_projects.jpg)
+<img src="../assets/general/build_location_based_projects.jpg" width="500"/>
 {:refdef}
 
 ## Test-Driven iOS Development - Gimme The Code
