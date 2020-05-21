@@ -41,11 +41,11 @@ plugins:
   - jekyll-paginate
   - jekyll-remote-theme
 
-header_pages:
-  - imprint.md
-  - privacy.md
-  - books.md
-  - about.md
+#header_pages:
+#  - imprint.md
+#  - privacy.md
+#  - books.md
+#  - about.md
 show_excerpts: true
 
 #plainwhite:
@@ -74,4 +74,3 @@ paginate: 5
 #   - vendor/gems/
 #   - vendor/ruby/
 
-theme: jekyll-theme-minimal
