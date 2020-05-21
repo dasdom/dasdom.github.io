@@ -41,8 +41,8 @@ plugins:
   - jekyll-paginate
   - jekyll-remote-theme
 
-#header_pages:
-#  - imprint.md
+header_pages:
+  - imprint.md
 #  - privacy.md
 #  - books.md
 #  - about.md
