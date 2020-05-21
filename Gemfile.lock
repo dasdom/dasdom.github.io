@@ -46,6 +46,10 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     mercenary (0.3.6)
+    minima (2.5.1)
+      jekyll (>= 3.5, < 5.0)
+      jekyll-feed (~> 0.9)
+      jekyll-seo-tag (~> 2.1)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     public_suffix (4.0.3)
@@ -60,11 +64,6 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
-    tale (0.1.8)
-      jekyll (~> 3.6)
-      jekyll-feed (~> 0.10)
-      jekyll-paginate (~> 1.1)
-      jekyll-seo-tag (~> 2.5)
 
 PLATFORMS
   ruby
@@ -74,7 +73,7 @@ DEPENDENCIES
   jekyll-feed (~> 0.6)
   jekyll-paginate
   jekyll-remote-theme
-  tale
+  minima
   tzinfo-data
 
 BUNDLED WITH

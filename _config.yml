@@ -28,13 +28,13 @@ twitter:
 
 # Build settings
 markdown: kramdown
-#theme: minima
+theme: minima
 #theme: texture
 #theme: plainwhite
 #theme:      tale
 #remote_theme: thelehhman/texture
 #remote_theme: thelehhman/plainwhite-jekyll
-remote_theme: chesterhow/tale
+#remote_theme: chesterhow/tale
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
@@ -43,16 +43,18 @@ plugins:
 
 header_pages:
   - imprint.md
-  - privacy_policy.html
+  - privacy.md
+  - books.md
+  - about.md
 show_excerpts: true
 
-plainwhite:
+#plainwhite:
 #texture:
-  title: dasdom
-  tagline: A blog about iOS development
-  showNav: true
-  style: black
-#mimima:
+#  title: dasdom
+#  tagline: A blog about iOS development
+#  showNav: true
+#  style: black
+mimima:
   social-links:
     twitter: dasdom
     github: dasdom
