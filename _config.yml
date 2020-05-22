@@ -28,7 +28,7 @@ twitter:
 
 # Build settings
 markdown: kramdown
-theme: minima
+theme: jekyll-theme-minimal
 #theme: texture
 #theme: plainwhite
 #theme:      tale
