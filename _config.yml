@@ -22,8 +22,6 @@ url: "https://dasdom.github.io/" # the base hostname & protocol for your site, e
 twitter_username: dasdom
 github_username:  dasdom
 
-logo: assets/general/avatar.png
-
 twitter:
     username: dasdom
     card: summary
