@@ -22,13 +22,15 @@ url: "https://dasdom.github.io/" # the base hostname & protocol for your site, e
 twitter_username: dasdom
 github_username:  dasdom
 
+logo: assets/general/avatar.png
+
 twitter:
     username: dasdom
     card: summary
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-minimal
+theme: minima
 #theme: texture
 #theme: plainwhite
 #theme:      tale
