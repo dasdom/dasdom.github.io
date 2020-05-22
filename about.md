@@ -5,6 +5,8 @@ author: Dominik Hauser
 permalink: /about/
 ---
 
+<img src="../assets/general/avatar.png" width="300"/>
+
 My name is Dominik Hauser.
 I'm an iOS developer and author from Germany.
 
