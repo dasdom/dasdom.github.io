@@ -43,7 +43,7 @@ You can see how this works in `CustomCellListViewController.swift` in the sample
 When I tried to write a test for this, I ran into the problem that `updateConfiguration(using:)` is called after my test is finished.
 ~~So it looks like to me that UIKit postpones the call onto the next run loop.
 This means to be able to test the population of the collection view cell, I needed move the assertion to the next run loop as well.~~
-A Apple engineer answered to my posts, that is should be sufficient to call `layoutIfNeeded` on the cell to trigger populating the cell.
+The Apple engineer [@_mochs](https://twitter.com/_mochs) answered to my posts, that it should be sufficient to call `layoutIfNeeded` on the cell to trigger populating the cell.
 
 So, this works:
 
