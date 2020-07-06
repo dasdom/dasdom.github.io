@@ -41,60 +41,28 @@ The cell then calls the method `updateConfiguration(using:)` and you override th
 You can see how this works in `CustomCellListViewController.swift` in the sample code provided by Apple [here](https://developer.apple.com/documentation/uikit/views_and_controls/collection_views/implementing_modern_collection_views).
 
 When I tried to write a test for this, I ran into the problem that `updateConfiguration(using:)` is called after my test is finished.
-So it looks like to me that UIKit postpones the call onto the next run loop.
-This means to be able to test the population of the collection view cell, I needed move the assertion to the next run loop as well.
+~~So it looks like to me that UIKit postpones the call onto the next run loop.
+This means to be able to test the population of the collection view cell, I needed move the assertion to the next run loop as well.~~
+A Apple engineer answered to my posts, that is should be sufficient to call `layoutIfNeeded` on the cell to trigger populating the cell.
 
-This is the test I came up with:
+So, this works:
 
 {% highlight swift %}
 func test_cellForItem_returnsConfiguresCell() {
     let item = Item(category: .music, title: "Foo", description: "Bar")
     sut.items = [item]
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
-    window.rootViewController = sut
-    window.makeKeyAndVisible()
-    let nextRunloopExpectation = expectation(description: "Next runloop")
-   
+    sut.loadViewIfNeeded()
+
     let indexPath = IndexPath(item: 0, section: 0)
     let cell = collectionView.dataSource?.collectionView(collectionView, cellForItemAt: indexPath) as! CustomListCell
 
-    DispatchQueue.main.async { nextRunloopExpectation.fulfill() }
-    waitForExpectations(timeout: 1.0) { error in
-        let listContentConfiguration = cell.listContentView.configuration as! UIListContentConfiguration
-        XCTAssertEqual(listContentConfiguration.text, item.title)
-    }
+    let listContentConfiguration = cell.listContentView.configuration as! UIListContentConfiguration
+    XCTAssertEqual(listContentConfiguration.text, item.title)
 }
 {% endhighlight %}
 
 By the way, this is a test for the sample code provided by Apple.
 I've added tests to better understand what's going on.
-
-In the sample code from Apple is also an example using the standard cell `UICollectionViewListCell`.
-This again is easier to test and you don't need to use an expectation:
-
-{% highlight swift %}
-func test_cellForItem_returnsPopulatedCell() {
-  // given
-  sut.names = ["foobar"]
-  let window = UIWindow(frame: CGRect(x: 0, y: 0,
-                                      width: 200, height: 200))
-  window.rootViewController = sut
-  window.makeKeyAndVisible()
-  
-  // when
-  let indexPath = IndexPath(item: 0, section: 0)
-  let cell = sut.collectionView.dataSource?.collectionView(
-    sut.collectionView,
-    cellForItemAt: indexPath) as! UICollectionViewListCell
-
-  // then
-  let contentConfiguration = cell
-    .contentConfiguration as! UIListContentConfiguration
-  XCTAssertEqual(contentConfiguration.text, sut.names.first)
-}
-{% endhighlight %}
-
-I have to investigate further to figure out what the difference is and why the one with a custom layout behaves differently.
 
 Do you know a better way to test this?
 How would you test that the collection view cell in the list layout is populated properly?
