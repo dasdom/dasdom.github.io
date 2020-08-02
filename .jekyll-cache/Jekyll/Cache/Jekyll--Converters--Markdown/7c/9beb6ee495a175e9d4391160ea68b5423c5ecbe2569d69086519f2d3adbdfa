@@ -1,5 +1,0 @@
-I"&<p>Sometimes you have a struct/class that holds some kind of sequence and
-you would like to iterate over it with <code class="highlighter-rouge">for ... in ...</code>. In
-Swift the struct/class has to conform to <code class="highlighter-rouge">SequenceType</code> to
-enable this iteration.</p>
-:ET

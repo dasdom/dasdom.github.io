@@ -1,2 +1,0 @@
-I"â<p>UIStackView was introduces with iOS 9. And from the beginning I loved it. UIStackViews allow to use Auto Layout without adding Auto Layout Constraints. And most of the times you get away with changing a few properties to achieve what you want. You need some time to get used to it though. So back when a beta of iOS 9 was available I created an <a href="https://github.com/dasdom/UIStackViewPlayground">Xcode Playground</a> to experiment with the new and shiny UIStackViews.</p>
-:ET

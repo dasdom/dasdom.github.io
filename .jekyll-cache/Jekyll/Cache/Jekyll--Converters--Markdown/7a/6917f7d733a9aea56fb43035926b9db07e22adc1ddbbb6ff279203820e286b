@@ -1,7 +1,0 @@
-I"â<p>A Swift Playground is a great way to prototype functions and classes for iOS and Mac development. Recently I needed a script to read out parts of a wordpress export file and fill the contents into a JSON file. The problems with Swift scripts and Xcode is, that I did not manage to get autocompletion. The autocompletion seems to be bound to projects.</p>
-<p>I could have created a project for the development of the classes for the script. But in Xcode 6 there are playgrounds. Instant feedback for the win!</p>
-<p>As I needed to read in an xml file I needed a way to open the file in a playground.</p>
-<p>First I needed to find the share folder for the playgrounds.</p>
-<pre class="lang:swift decode:true ">import XCPlayground
-</pre>
-:ET

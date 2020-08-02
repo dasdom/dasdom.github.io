@@ -1,6 +1,0 @@
-I"Ž<p>First import `Accounts`, `Social` and get the account store</p>
-<pre class="lang:swift decode:true ">
-import Accounts
-import Social
-</pre>
-:ET

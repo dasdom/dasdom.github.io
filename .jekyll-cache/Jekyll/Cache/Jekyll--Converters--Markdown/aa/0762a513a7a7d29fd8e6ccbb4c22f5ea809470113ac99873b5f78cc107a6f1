@@ -1,4 +1,0 @@
-I"<p>Sometimes I see code that sets up subviews in <code class="highlighter-rouge">viewDidLoad()</code> of a
-view controller. Be a good citizen and don’t do that. If you have
-to add something to a view, do it in a <code class="highlighter-rouge">UIView</code> subclass.</p>
-:ET

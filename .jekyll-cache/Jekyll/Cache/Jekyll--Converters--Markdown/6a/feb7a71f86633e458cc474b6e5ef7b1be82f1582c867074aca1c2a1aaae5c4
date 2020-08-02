@@ -1,7 +1,0 @@
-I"‰<p>Since I read the <a href="https://www.objc.io/issues/1-view-controllers/lighter-view-controllers/">objc.io post about light view
-controller</a>,
-every few month I come back to the same problem: find the best way to
-write a table view controller. I have tried several different approaches
-like putting the data source and delegate in a separate class or using
-MVVM to populate the cell.</p>
-:ET

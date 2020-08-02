@@ -1,6 +1,0 @@
-I"|<p>As you all know <code class="highlighter-rouge">NSCoding</code> doesn’t
-work with Swift structs. <code class="highlighter-rouge">NSCoding</code> only works
-for classes inheriting from <code class="highlighter-rouge">NSObject</code>. But the
-next (or current) big thing are structs. Value types all the way. So we
-need a way to archive and unarchive instances of structs.</p>
-:ET
