@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="dasdom"/><link rel="canonical" href="https://dasdom.dev/posts/search-and-replace-in-xcode"/><meta name="twitter:url" content="https://dasdom.dev/posts/search-and-replace-in-xcode"/><meta name="og:url" content="https://dasdom.dev/posts/search-and-replace-in-xcode"/><title>Search and Replace in Xcode | dasdom</title><meta name="twitter:title" content="Search and Replace in Xcode | dasdom"/><meta name="og:title" content="Search and Replace in Xcode | dasdom"/><meta name="description" content="Did you know that you can use regular expressions in search and replace in Xcode?"/><meta name="twitter:description" content="Did you know that you can use regular expressions in search and replace in Xcode?"/><meta name="og:description" content="Did you know that you can use regular expressions in search and replace in Xcode?"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to dasdom"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">dasdom</a><nav><ul><li><a class="selected" href="/posts">Posts</a></li><li><a href="/books">Books</a></li><li><a href="/about">About</a></li><li><a href="/imprint">Imprint</a></li><li><a href="/privacy">Privacy</a></li></ul></nav></div></header><div class="wrapper"><p>25. Aug 2019</p><article><div class="content"><h1>Search and Replace in Xcode</h1><p>Recently I took the regex course at <a href="https://www.executeprogram.com/">executeprogram.com</a>. Awesome stuff.</p><p>As you know, as soon as you have a slight idea what regex is, you try to use it everywhere. Yesterday I needed to change all strings of double values in a JSON into double values. For example I wanted to replace <code>"1.23"</code> with <code>1.23</code>.</p><h1>Regex without the <code>\d+.*?\w</code></h1><p>If you don't know regular expressions but still need more than just replace a simple string with another simple string, Xcode has you covered.</p><p>As an example lets say we'd like to change all the properties in the following struct into optionals:</p><pre><code><span class="keyword">struct</span> ChemElement : <span class="type">Codable</span>, <span class="type">Equatable</span> {
+  <span class="keyword">let</span> abbreviation: <span class="type">String</span>
+  <span class="keyword">let</span> atomMass: <span class="type">Double</span>
+  <span class="keyword">let</span> electronConfiguration: <span class="type">String</span>
+  <span class="keyword">let</span> group: <span class="type">String</span>
+  <span class="keyword">let</span> name: <span class="type">String</span>
+  <span class="keyword">let</span> ordinal: <span class="type">Int</span>
+  <span class="keyword">let</span> period: <span class="type">Int</span>
+  <span class="keyword">let</span> yPos: <span class="type">Int</span>
+  <span class="keyword">let</span> title: <span class="type">String</span>
+  <span class="keyword">let</span> pauling: <span class="type">String</span>
+  <span class="keyword">let</span> mostImportantRadioactiveIsotope: <span class="type">Int</span>
+  <span class="keyword">let</span> decayType: <span class="type">String</span>
+  <span class="keyword">let</span> lifetime: <span class="type">String</span>
+  <span class="keyword">let</span> phaseNorm: <span class="type">String</span>
+  <span class="keyword">let</span> crystalStructure: <span class="type">String</span>
+}
+</code></pre><p>(Please don't judge this code. I'm still refactoring. ;) )</p><p>We activate search with ⌘-f. In the search bar is a plus sign. When you click it, you can select different elements to search for. The patterns we need is <code>let Word: Word</code>. The matching substrings are highlighted in the editor:</p><img src="../../assets/2019-08-25/search-result-without-regex.png"/><p>If you look closely you can see there is a small number next to the pattern elements:</p><img src="../assets/2019-08-25/search-result-without-regex-detail.png"/><p>In the <code>Replace</code> text field you can refer to the different matches using a <code>$</code> sign and the number next to the pattern part like this: <code>var $1: $2?</code>. In Xcode this looks like this:</p><img src="../../assets/2019-08-25/search-result-without-regex-detail-replace.png"/><p>When we now click the <code>All</code> button, all the properties are changed into optional properties:</p><pre><code><span class="keyword">struct</span> ChemElement : <span class="type">Codable</span>, <span class="type">Equatable</span> {
+  <span class="keyword">var</span> abbreviation: <span class="type">String</span>?
+  <span class="keyword">var</span> atomMass: <span class="type">Double</span>?
+  <span class="keyword">var</span> chemieBool: <span class="type">Bool</span>?
+  <span class="keyword">var</span> electronConfiguration: <span class="type">String</span>?
+  <span class="keyword">var</span> group: <span class="type">String</span>?
+  <span class="keyword">var</span> name: <span class="type">String</span>?
+  <span class="keyword">var</span> ordinal: <span class="type">Int</span>?
+  <span class="keyword">var</span> period: <span class="type">Int</span>?
+  <span class="keyword">var</span> yPos: <span class="type">Int</span>?
+  <span class="keyword">var</span> title: <span class="type">String</span>?
+  <span class="keyword">var</span> pauling: <span class="type">String</span>?
+  <span class="keyword">var</span> mostImportantRadioactiveIsotope: <span class="type">Int</span>?
+  <span class="keyword">var</span> decayType: <span class="type">String</span>?
+  <span class="keyword">var</span> lifetime: <span class="type">String</span>?
+  <span class="keyword">var</span> phaseNorm: <span class="type">String</span>?
+  <span class="keyword">var</span> crystalStructure: <span class="type">String</span>?
+}
+</code></pre><h1>Search using regular expressions</h1><p>If you know regular expressions you can activate it in search by clicking the drop down that shows <code>Contains</code> and change it into <code>Regular Expression</code>:</p><img src="../../assets/2019-08-25/activate-regular-expression-in-search.png"/><p>Than you can use regular expressions when searching:</p><img src="../../assets/2019-08-25/search-with-regex.png"/><p>But if you'd like to use matches in <code>Replace</code> like you did above you need to add parentheses like this:</p><img src="../../assets/2019-08-25/search-and-replace-with-regex.png"/><p><strong>Thanks for reading!</strong></p><p>If you have comments about this or in case I missed something, you can find me on <a href="https://twitter.com/dasdom">Twitter</a>.</p></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/xcode">Xcode</a></li><li><a href="/tags/regex">Regex</a></li></ul></article></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>

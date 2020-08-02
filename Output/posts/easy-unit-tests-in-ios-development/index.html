@@ -1,0 +1,56 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="dasdom"/><link rel="canonical" href="https://dasdom.dev/posts/easy-unit-tests-in-ios-development"/><meta name="twitter:url" content="https://dasdom.dev/posts/easy-unit-tests-in-ios-development"/><meta name="og:url" content="https://dasdom.dev/posts/easy-unit-tests-in-ios-development"/><title>Easy Unit Tests In iOS Development | dasdom</title><meta name="twitter:title" content="Easy Unit Tests In iOS Development | dasdom"/><meta name="og:title" content="Easy Unit Tests In iOS Development | dasdom"/><meta name="description" content="Starting with unit tests is not hard. Here are some easy tests you can add to your project right now."/><meta name="twitter:description" content="Starting with unit tests is not hard. Here are some easy tests you can add to your project right now."/><meta name="og:description" content="Starting with unit tests is not hard. Here are some easy tests you can add to your project right now."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to dasdom"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">dasdom</a><nav><ul><li><a class="selected" href="/posts">Posts</a></li><li><a href="/books">Books</a></li><li><a href="/about">About</a></li><li><a href="/imprint">Imprint</a></li><li><a href="/privacy">Privacy</a></li></ul></nav></div></header><div class="wrapper"><p>16. Mar 2019</p><article><div class="content"><h1>Easy Unit Tests In iOS Development</h1><p>Testing is hard. That's why it's not done enough in iOS development. When I ask other developers, many don't write unit tests at all. That's no good. Unit tests are an essential tool to build high quality iOS apps and allow disruptive refactoring without breaking functionalities.</p><p>The main advantages of writing unit tests are: 1. The code becomes refactorable. 2. Testable code usually is better code. So when you are "forced" to write code, your code automatically becomes better. 3. It's less likely to introduce regression into code with a good test coverage. 4. Writing the tests first often makes implementing a new feature easier because you intentionally make very small steps. 5. Tests are a living documentation. With living I mean, it's less likely that they get asynchronous to the actual code as it often happens to traditional documentation on some website.</p><p>OK, tests are good and important. Let's assume you are willing to start writing tests for your code. How do you start? The most important thing is to write the first test. So here are some easy tests you can introduce to you code right now. Let's get started.</p><h2>Test That A Property Was Set</h2><p>Let's say we have a <code>User</code> struct with a <code>firstname</code> and a <code>lastname</code>:</p><pre><code><span class="keyword">struct</span> User {
+  <span class="keyword">var</span> firstname: <span class="type">String</span> = <span class="string">""</span>
+  <span class="keyword">var</span> lastname: <span class="type">String</span> = <span class="string">""</span>
+}
+</code></pre><p>Now we need a property <code>name</code> that is <code>firstname</code> and <code>lastname</code> with space in between.</p><p>We will add that feature using Test-Diven Development (TDD). In TDD you write the test before you add the code to be testet. It sounds strange but after you got used to it, this totally makes sense. We assume the project already has a test target. (If this is not the case, just add a test target.)</p><p>Now the test for the feature we are going to build:</p><pre><code><span class="keyword">import</span> XCTest
+<span class="keyword">@testable import</span> MyApp
+
+<span class="keyword">class</span> PropertyTests : <span class="type">XCTestCase</span> {
+  
+  <span class="keyword">var</span> sut: <span class="type">User</span>!
+  
+  <span class="keyword">override func</span> setUp() {
+    sut = <span class="type">User</span>()
+  }
+  
+  <span class="keyword">override func</span> tearDown() {
+    sut = <span class="keyword">nil</span>
+  }
+  
+  <span class="keyword">func</span> test_name_property() {
+    <span class="comment">// Arrange
+
+    // Act</span>
+    sut.<span class="property">firstname</span> = <span class="string">"Foo"</span>
+    sut.<span class="property">lastname</span> = <span class="string">"Bar"</span>
+    
+    <span class="comment">// Assert</span>
+    <span class="call">XCTAssertEqual</span>(sut.<span class="property">name</span>, <span class="string">"Foo Bar"</span>)
+  }
+}
+</code></pre><p>Try running the test with the shortcut ⌘U. The test does not compile because <code>User</code> doesn't have a property named <code>name</code>. A not compiling test is a failing test. Let's add enough code to make it compile.</p><pre><code><span class="keyword">struct</span> User {
+  <span class="keyword">var</span> firstname: <span class="type">String</span> = <span class="string">""</span>
+  <span class="keyword">var</span> lastname: <span class="type">String</span> = <span class="string">""</span>
+  <span class="keyword">var</span> name: <span class="type">String</span> = <span class="string">""</span>
+}
+</code></pre><p>Again run the test with ⌘U. Now the test compiles but if fails. This is a good sign because we haven't implemented the code we like to test. If the test would pass before we have implemented the feature, probably the test would pass all the time and would therefore be useless.</p><p>When we change the <code>User</code> struct to the following the test passes:</p><pre><code><span class="keyword">struct</span> User {
+  <span class="keyword">var</span> firstname: <span class="type">String</span> = <span class="string">""</span> {
+    <span class="keyword">didSet</span> {
+      <span class="call">updateName</span>(firstname: firstname,
+                 lastname: lastname)
+    }
+  }
+  <span class="keyword">var</span> lastname: <span class="type">String</span> = <span class="string">""</span> {
+    <span class="keyword">didSet</span> {
+      <span class="call">updateName</span>(firstname: firstname,
+                 lastname: lastname)
+    }
+  }
+  <span class="keyword">var</span> name: <span class="type">String</span> = <span class="string">""</span>
+  
+  <span class="keyword">private mutating func</span> updateName(firstname: <span class="type">String</span>, lastname: <span class="type">String</span>) {
+    
+    name = <span class="string">"</span>\(firstname) \(lastname)<span class="string">"</span>
+  }
+}
+</code></pre><p>If you run the test again, you'll see that it now passes. Awesome! We just used Test-Driven Development to add a feature to the <code>User</code> struct.</p><p>If you want to learn more about TDD and how to test many different scenarios in iOS development, I'm writing a book about that. It's still im progress, but you can already get it at <a href="https://leanpub.com/tddfakebookforios">leanpub</a>.</p></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/tdd">TDD</a></li><li><a href="/tags/ios">iOS</a></li><li><a href="/tags/swift">Swift</a></li><li><a href="/tags/testing">Testing</a></li><li><a href="/tags/unit-tests">Unit Tests</a></li></ul></article></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p><p><a href="/feed.rss">RSS feed</a></p></footer></body></html>
