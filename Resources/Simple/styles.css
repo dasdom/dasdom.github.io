@@ -115,8 +115,8 @@ a {
 .tag-list li,
 .tag {
     display: inline-block;
-    background-color: #282a2b;
-    color: #ddd;
+    background-color: #ddd;
+    color: #282a2b;
     padding: 4px 6px;
     border-radius: 5px;
     margin-right: 5px;
@@ -125,7 +125,7 @@ a {
 
 .tag-list a,
 .tag a {
-    text-decoration: none;
+    text-decoration: none;  
 }
 
 .item-page .tag-list {
@@ -233,6 +233,12 @@ code {
 
     header {
         background-color: #181a1b;
+    }
+    
+    .tag-list li,
+    .tag {
+        background-color: #282a2b;
+        color: #ddd;
     }
     
     pre {

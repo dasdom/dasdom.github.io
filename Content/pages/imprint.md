@@ -1,8 +1,8 @@
 ---
-layout: page
 title: Impressum
-permalink: /impressum/
 ---
+
+# Impressum
 
 Verantwortlch für diese Seite ist:
 Dominik Hauser
