@@ -87,10 +87,40 @@ extension Node where Context == HTML.BodyContext {
           .href("https://github.com/johnsundell/publish")
         )
       ),
-      .p(.a(
+      .p(
+        .a(
         .text("RSS feed"),
         .href("/feed.rss")
-        ))
+        ),
+        .a(
+          .text(" | ")
+        ),
+        .a(
+          .text("Twitter"),
+          .href("https://twitter.com/dasdom")
+        ),
+        .a(
+          .text(" | ")
+        ),
+        .a(
+          .text("StackOverflow"),
+          .href("https://stackoverflow.com/users/498796/dasdom")
+        ),
+        .a(
+          .text(" | ")
+        ),
+        .a(
+          .text("Github"),
+          .href("https://github.com/dasdom")
+        ),
+        .a(
+          .text(" | ")
+        ),
+        .a(
+          .text("My Book"),
+          .href("https://pragprog.com/titles/dhios/")
+        )
+      )
     )
   }
 }
