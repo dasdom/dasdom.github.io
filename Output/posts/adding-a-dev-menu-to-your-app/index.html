@@ -1,0 +1,74 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="dasdom"/><link rel="canonical" href="https://dasdom.dev/posts/adding-a-dev-menu-to-your-app"/><meta name="twitter:url" content="https://dasdom.dev/posts/adding-a-dev-menu-to-your-app"/><meta name="og:url" content="https://dasdom.dev/posts/adding-a-dev-menu-to-your-app"/><title>Adding A Development Menu To Your App | dasdom</title><meta name="twitter:title" content="Adding A Development Menu To Your App | dasdom"/><meta name="og:title" content="Adding A Development Menu To Your App | dasdom"/><meta name="description" content="A developer menu can help to speed up development."/><meta name="twitter:description" content="A developer menu can help to speed up development."/><meta name="og:description" content="A developer menu can help to speed up development."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to dasdom"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">dasdom</a><nav><ul><li><a class="selected" href="/posts">Posts</a></li><li><a href="/books">Books</a></li><li><a href="/about">About</a></li><li><a href="/imprint">Imprint</a></li><li><a href="/privacy">Privacy</a></li></ul></nav></div></header><div class="wrapper"><p>11. Aug 2020</p><article><div class="content"><h1>Adding A Development Menu To Your App</h1><p>Often during development of an iOS app, I need to navigate to the same part of the app over and over again. Or I need to simulate events like discovery of iBeacons without having the iBeacons around. Or I need to test the look of the view with different data.</p><p>To make this and much more easy during development I often add a development menu to the app. When I long press the screen a menu appears that lets me switch to another part of the app or simulate events.</p><img src="../../assets/2020-08-11/dev-menu.png"/><p>Here is how this can easily be added your you UIKit app.</p><p>In this example implementation we want to be able to navigate to an arbitrary view controller and to send notifications via the <code>NotificationCenter</code>. Notifications can be used to trigger arbitrary actions in the apps and they are easy to remove when development is 'finished'. We define the type of the developer actions in the developer menu using an enum:</p><h2>Developer Menu Item</h2><pre><code><span class="keyword">enum</span> DevActionType {
+  <span class="keyword">case</span> viewController
+  <span class="keyword">case</span> notification
+}
+</code></pre><p>The structure holding the information about the developer menu item looks like this:</p><pre><code><span class="keyword">struct</span> DevAction {
+  <span class="keyword">let</span> name: <span class="type">String</span>
+  <span class="keyword">let</span> identifier: <span class="type">String</span>
+  <span class="keyword">let</span> type: <span class="type">DevActionType</span>
+  <span class="keyword">var</span> userInfo: [<span class="type">AnyHashable</span> : <span class="type">Any</span>]?
+  
+  <span class="keyword">init</span>(name: <span class="type">String</span>,
+       identifier: <span class="type">String</span>,
+       type: <span class="type">DevActionType</span> = .<span class="dotAccess">viewController</span>,
+       userInfo: [<span class="type">AnyHashable</span> : <span class="type">Any</span>]? = <span class="keyword">nil</span>) {
+    
+    <span class="keyword">self</span>.<span class="property">name</span> = name
+    <span class="keyword">self</span>.<span class="property">identifier</span> = identifier
+    <span class="keyword">self</span>.<span class="property">type</span> = type
+    <span class="keyword">self</span>.<span class="property">userInfo</span> = userInfo
+  }
+}
+</code></pre><p>The developer action consists of a name to be shown in the user interface, an identifier to define the action, a type, and an optional user info to be used in notifications. Next we need a method that we can call when we want to invoke the action. I think 'trigger' is a good name for this method. We have to pass in the window of the app to be able to replace the root view controller:</p><pre><code><span class="keyword">func</span> trigger(window: <span class="type">UIWindow</span>? = <span class="keyword">nil</span>) {
+  <span class="keyword">switch</span> type {
+    <span class="keyword">case</span> .<span class="dotAccess">viewController</span>:
+      <span class="comment">// instantiate view controller and set as root</span>
+      <span class="keyword">let</span> storyboard = <span class="type">UIStoryboard</span>(name: <span class="string">"Main"</span>, bundle: <span class="keyword">nil</span>)
+      <span class="keyword">let</span> viewController = storyboard.<span class="call">instantiateViewController</span>(withIdentifier: identifier)
+      window?.<span class="property">rootViewController</span> = viewController
+
+    <span class="keyword">case</span> .<span class="dotAccess">notification</span>:
+      <span class="comment">// post notification with identifier as name</span>
+      <span class="keyword">let</span> notificationName = <span class="type">Notification</span>.<span class="type">Name</span>(rawValue: identifier)
+      <span class="type">NotificationCenter</span>.<span class="property">default</span>.<span class="call">post</span>(name: notificationName,
+                                      object: <span class="keyword">self</span>,
+                                      userInfo: userInfo)
+  }
+}
+</code></pre><p>If the type of the action is <code>.viewController</code>, we instantiate an instance from the storyboard and set it as the root view controller of the window. If the type of the action is <code>.notification</code>, we post a notification using the identifier as the notification name and the user info.</p><p>With a structure for the developer action, we can setup the user interface for the developer menu. In <code>SceneDelegate.swift</code> we add the following extension:</p><pre><code><span class="keyword">extension</span> <span class="type">SceneDelegate</span> {
+  <span class="keyword">func</span> setupDevMenu() {
+    <span class="keyword">let</span> devActions = [
+      <span class="type">DevAction</span>(name: <span class="string">"Foo"</span>, identifier: <span class="string">"FooViewController"</span>),
+      <span class="type">DevAction</span>(name: <span class="string">"Login"</span>, identifier: <span class="string">"LoginViewController"</span>),
+      <span class="type">DevAction</span>(name: <span class="string">"Profile"</span>, identifier: <span class="string">"ProfileViewController"</span>),
+      <span class="type">DevAction</span>(name: <span class="string">"Name: Dasdom"</span>,
+                identifier: <span class="string">"changeName"</span>,
+                type: .<span class="dotAccess">notification</span>,
+                userInfo: [<span class="string">"name"</span>: <span class="string">"dasdom"</span>])
+    ]
+    
+    <span class="keyword">let</span> sheet = <span class="type">UIAlertController</span>(title: <span class="string">"Dev Menu"</span>,
+                                  message: <span class="string">"Where do you wanna go?"</span>,
+                                  preferredStyle: .<span class="dotAccess">actionSheet</span>)
+    
+    <span class="keyword">for</span> devAction <span class="keyword">in</span> devActions {
+      <span class="keyword">let</span> action = <span class="type">UIAlertAction</span>(title: devAction.<span class="property">name</span>, style: .<span class="dotAccess">default</span>) { action <span class="keyword">in</span>
+        devAction.<span class="call">trigger</span>(window: <span class="keyword">self</span>.<span class="property">window</span>)
+      }
+      sheet.<span class="call">addAction</span>(action)
+    }
+    
+    sheet.<span class="call">addAction</span>(<span class="type">UIAlertAction</span>(title: <span class="string">"Cancel"</span>, style: .<span class="dotAccess">cancel</span>, handler: <span class="keyword">nil</span>))
+    
+    window?.<span class="property">rootViewController</span>?.<span class="call">present</span>(sheet, animated: <span class="keyword">true</span>, completion: <span class="keyword">nil</span>)
+  }
+}
+</code></pre><p>With this extension we add a method to be called when we want to present the developer menu. In the method we define the developer actions. Next we define a <code>UIAlertController</code> sheet using the developer actions as actions. The action to be executed by the <code>UIAlertController</code> when we select a developer action just calls the trigger method of the developer action. We use the root view controller of the window to present the sheet in the user interface.</p><p>In our example the developer menu consists of four actions. Three to present view controllers and one to post a notification.</p><h2>Presenting The Developer Menu</h2><p>The final piece of the puzzle is to present the developer menu in the user interface. In my <a href="https://pragprog.com/titles/dhios/">book</a> I show how to use a special shake of the device to trigger a log screen. In this example we use a long press gesture recognizer to trigger the developer menu.</p><p>Fist we add a method that we use as an action for the gesture recognizer. A good place to define this method is the extension of <code>SceneDelegate</code> defined earlier.</p><pre><code><span class="keyword">@objc func</span> showDevMenu(<span class="keyword">_</span> sender: <span class="type">UIGestureRecognizer</span>) {
+  <span class="call">setupDevMenu</span>()
+}
+</code></pre><p>Next we add the gesture recognizer to the window in <code>scene(_:willConnectTo:options:)</code> of the <code>SceneDelegate</code>:</p><pre><code><span class="preprocessing">#if DEBUG</span>
+<span class="keyword">let</span> longPressRecognizer = <span class="type">UILongPressGestureRecognizer</span>(target: <span class="keyword">self</span>, action: <span class="keyword">#selector</span>(<span class="call">showDevMenu</span>(<span class="keyword">_</span>:)))
+longPressRecognizer.<span class="property">minimumPressDuration</span> = <span class="number">2</span>
+window?.<span class="call">addGestureRecognizer</span>(longPressRecognizer)
+<span class="preprocessing">#endif</span>
+</code></pre><p>It's a good idea to only add the gesture recognizer in DEBUG builds.</p><h2>Conclusion</h2><p>In some apps a developer menu can be a real time safer, especially when you have to iterate over one feature or a certain part of the user interface. It is quite easy to add such a developer menu in a way that it's safe and it doesn't affect the rest of the app. We can use notifications to trigger events or to add demo data and wrap this code in <code>#if DEBUG</code> statements.</p><p>What do you think about this approach? Are you using something similar? How do you deal with situations where you have to reach a screen way down in the navigation stack over and over again during development? Let me know on <a href="https://twitter.com/dasdom">Twitter</a>.</p></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/ios">iOS</a></li><li><a href="/tags/debugging">Debugging</a></li><li><a href="/tags/tricks">Tricks</a></li></ul></article></div><footer><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p><p><a href="/feed.rss">RSS feed</a><a> | </a><a href="https://twitter.com/dasdom">Twitter</a><a> | </a><a href="https://stackoverflow.com/users/498796/dasdom">StackOverflow</a><a> | </a><a href="https://github.com/dasdom">Github</a><a> | </a><a href="https://pragprog.com/titles/dhios/">My Book</a></p></footer></body></html>
