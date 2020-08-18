@@ -1,4 +1,250 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>dasdom</title><description>Swift, iOS, ObjC and stuff</description><link>https://dasdom.dev</link><language>en</language><lastBuildDate>Mon, 10 Aug 2020 23:17:02 +0200</lastBuildDate><pubDate>Mon, 10 Aug 2020 23:17:02 +0200</pubDate><ttl>250</ttl><atom:link href="https://dasdom.dev/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://dasdom.dev/posts/adding-a-dev-menu-to-your-app</guid><title>Adding A Development Menu To Your App</title><description>A developer menu can help to speed up development.</description><link>https://dasdom.dev/posts/adding-a-dev-menu-to-your-app</link><pubDate>Tue, 11 Aug 2020 12:00:00 +0200</pubDate><content:encoded><![CDATA[<h1>Adding A Development Menu To Your App</h1><p>Often during development of an iOS app, I need to navigate to the same part of the app over and over again. Or I need to simulate events like discovery of iBeacons without having the iBeacons around. Or I need to test the look of the view with different data.</p><p>To make this and much more easy during development I often add a development menu to the app. When I long press the screen a menu appears that lets me switch to another part of the app or simulate events.</p><img src="../../assets/2020-08-11/dev-menu.png"/><p>Here is how this can easily be added your you UIKit app.</p><p>In this example implementation we want to be able to navigate to an arbitrary view controller and to send notifications via the <code>NotificationCenter</code>. Notifications can be used to trigger arbitrary actions in the apps and they are easy to remove when development is 'finished'. We define the type of the developer actions in the developer menu using an enum:</p><h2>Developer Menu Item</h2><pre><code><span class="keyword">enum</span> DevActionType {
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>dasdom</title><description>Swift, iOS, ObjC and stuff</description><link>https://dasdom.dev</link><language>en</language><lastBuildDate>Tue, 18 Aug 2020 09:06:04 +0200</lastBuildDate><pubDate>Tue, 18 Aug 2020 09:06:04 +0200</pubDate><ttl>250</ttl><atom:link href="https://dasdom.dev/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://dasdom.dev/posts/mask-transition-between-view-controllers</guid><title>Building An Expanding Circle Transition Between View Controllers</title><description>How to build a punch out custom transition between view controllers.</description><link>https://dasdom.dev/posts/mask-transition-between-view-controllers</link><pubDate>Tue, 18 Aug 2020 12:00:00 +0200</pubDate><content:encoded><![CDATA[<h1>Building An Expanding Circle Transition Between View Controllers</h1><p>I love custom transitions between view controllers. One of the easiest of these transitions is taking an element from the previous view and animating it to its new place in the next view. For example like shown in this gif:</p><img src="../../assets/2020-08-18/image_transition.gif"/><p>At the job I had to implement another custom transition where an expanding circular region got punched out of the current view showing the next view beneath it. It took me a while and several wrong path to finally get it working.</p><p>The result looks like this:</p><img src="../../assets/2020-08-18/circular_transition.gif"/><p>(In reality the transition is a bit faster. I slowed it down for this gif to make the shadow easier to see.) The first approach we took was to add a circular expanding mask to the next view.</p><h2>First Approach: Expanding Mask</h2><p>Since iOS 8 <code>UIView</code> has a <code>mask</code> property that can be used to mask the shown portion of the view. To use this mask in a transition, we first need a <code>NSObject</code> subclass that conforms to the protocol <code>UIViewControllerAnimatedTransitioning</code>:</p><pre><code><span class="keyword">class</span> MaskTransition: <span class="type">NSObject</span>, <span class="type">UIViewControllerAnimatedTransitioning</span> {
+  
+  <span class="keyword">let</span> duration: <span class="type">TimeInterval</span> = <span class="number">1</span>
+  
+  <span class="keyword">func</span> transitionDuration(using transitionContext: <span class="type">UIViewControllerContextTransitioning</span>?) -&gt; <span class="type">TimeInterval</span> {
+    <span class="keyword">return</span> duration
+  }
+  
+  <span class="keyword">func</span> animateTransition(using transitionContext: <span class="type">UIViewControllerContextTransitioning</span>) {
+    <span class="comment">// To be implemented</span>
+  }
+}
+</code></pre><p>We define the transition animation in the method <code>animateTransition(using:)</code>. Within this method we can access the involved view controllers through the <code>transitionContext</code> like this:</p><pre><code><span class="keyword">guard let</span> from = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">from</span>),
+  <span class="keyword">let</span> to = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">to</span>) <span class="keyword">else</span> {
+    transitionContext.<span class="call">completeTransition</span>(<span class="keyword">false</span>)
+    <span class="keyword">return</span>
+}
+</code></pre><p>The transition itself happens in a container view. We have to add the views that should be visible during the transition to that container view:</p><pre><code><span class="keyword">let</span> containerView = transitionContext.<span class="property">containerView</span>
+
+containerView.<span class="call">addSubview</span>(from.<span class="property">view</span>)
+containerView.<span class="call">addSubview</span>(to.<span class="property">view</span>)
+</code></pre><p>Next we define the start and the end radius of the view mask:</p><pre><code><span class="keyword">let</span> fromRadius: <span class="type">CGFloat</span> = <span class="number">4</span>
+<span class="keyword">let</span> toRadius: <span class="type">CGFloat</span> = containerView.<span class="property">bounds</span>.<span class="property">size</span>.<span class="property">height</span> * <span class="number">1.2</span>
+</code></pre><p>We define the view to be used as the mask view and add it to the view we are transition to:</p><pre><code><span class="keyword">let</span> maskView = <span class="type">UIView</span>(frame: <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>,
+                                    width: fromRadius, height: fromRadius))
+maskView.<span class="property">backgroundColor</span> = .<span class="dotAccess">white</span>
+maskView.<span class="property">center</span> = containerView.<span class="property">center</span>
+maskView.<span class="property">layer</span>.<span class="property">cornerRadius</span> = fromRadius/<span class="number">2</span>
+
+to.<span class="property">view</span>.<span class="property">mask</span> = maskView
+</code></pre><p>Note that we set the <code>backgroundColor</code> of the mask view to <code>.white</code> here. As this view is used as a mask, only the alpha value of that background color is used. So you could also set the color to any other color as long as its alpha value is <code>1</code>.</p><p>Finally we can animate the transition like this:</p><pre><code><span class="type">UIViewPropertyAnimator</span>.<span class="call">runningPropertyAnimator</span>(
+  withDuration: duration, delay: <span class="number">0</span>, options: .<span class="dotAccess">curveEaseIn</span>, animations: {
+    
+    maskView.<span class="property">frame</span> = <span class="type">CGRect</span>(x: <span class="number">0</span>, y: <span class="number">0</span>, width: toRadius, height: toRadius)
+    maskView.<span class="property">center</span> = containerView.<span class="property">center</span>
+    maskView.<span class="property">layer</span>.<span class="property">cornerRadius</span> = toRadius/<span class="number">2</span>
+    
+}) { position <span class="keyword">in</span>
+  
+  to.<span class="property">view</span>.<span class="property">mask</span> = <span class="keyword">nil
+  let</span> complete = !transitionContext.<span class="property">transitionWasCancelled</span>
+  transitionContext.<span class="call">completeTransition</span>(complete)
+  
+}
+</code></pre><p>When the animation is finished, we need to tell the transition context that the transition is complete. Don't forget this step otherwise the transition never finishes and the user interface stays unresponsive.</p><p>To use this transition when a view controller gets pushed onto the navigation stack, create a class called <code>NavigationControllerDelegate</code> and add the following code:</p><pre><code><span class="keyword">class</span> NavigationControllerDelegate: <span class="type">NSObject</span>, <span class="type">UINavigationControllerDelegate</span> {
+  
+  <span class="keyword">func</span> navigationController(<span class="keyword">_</span> navigationController: <span class="type">UINavigationController</span>,
+                            animationControllerFor operation: <span class="type">UINavigationController</span>.<span class="type">Operation</span>, 
+                            from fromVC: <span class="type">UIViewController</span>, 
+                            to toVC: <span class="type">UIViewController</span>) -&gt; <span class="type">UIViewControllerAnimatedTransitioning</span>? {
+    
+    <span class="keyword">return</span> <span class="type">MaskTransition</span>()
+  }
+}
+</code></pre><p>Finally we need to set the delegate to the navigation controller we are using. You can do that where ever it fits in your code. As I'm creating the user interface in code, a good place to set the navigation controller delegate is the scene delegate where I create the navigation controller:</p><pre><code><span class="keyword">var</span> navigationControllerDelegate = <span class="type">NavigationControllerDelegate</span>()
+
+<span class="keyword">func</span> scene(<span class="keyword">_</span> scene: <span class="type">UIScene</span>,
+           willConnectTo session: <span class="type">UISceneSession</span>,
+           options connectionOptions: <span class="type">UIScene</span>.<span class="type">ConnectionOptions</span>) {
+  
+  <span class="keyword">guard let</span> scene = (scene <span class="keyword">as</span>? <span class="type">UIWindowScene</span>) <span class="keyword">else</span> { <span class="keyword">return</span> }
+  
+  window = <span class="type">UIWindow</span>(windowScene: scene)
+  <span class="keyword">let</span> navigationController = <span class="type">UINavigationController</span>(rootViewController: <span class="type">ViewController</span>())
+  navigationController.<span class="property">delegate</span> = navigationControllerDelegate
+  window?.<span class="property">rootViewController</span> = navigationController
+  window?.<span class="call">makeKeyAndVisible</span>()
+}
+</code></pre><p>This transition looks kind of what we try to achieve but one essential part is missing: the shadow. There should be a shadow indicating that this is a punch out in the current view, revealing the next view underneath it. I tried everything I could imagine but I didn't manage to add this shadow. This is not really surprising as we do not punch out anything here. So to make the transition as required, we have to actually punch out a portion of the view.</p><p>(If you don't need the shadow, you can use this transition because it's simpler than the following one.)</p><h2>Punch Out With Shadow</h2><p>First let's recreate the transition we did with the mask view but this time punching out instead of masking. The start of <code>animateTransition(using:)</code> looks the same:</p><pre><code><span class="keyword">func</span> animateTransition(using transitionContext: <span class="type">UIViewControllerContextTransitioning</span>) {
+  
+  <span class="keyword">guard let</span> from = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">from</span>),
+    <span class="keyword">let</span> to = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">to</span>) <span class="keyword">else</span> {
+      transitionContext.<span class="call">completeTransition</span>(<span class="keyword">false</span>)
+      <span class="keyword">return</span>
+  }
+  
+  <span class="keyword">let</span> containerView = transitionContext.<span class="property">containerView</span>
+  containerView.<span class="call">addSubview</span>(to.<span class="property">view</span>)
+  containerView.<span class="call">addSubview</span>(from.<span class="property">view</span>)
+  
+  <span class="keyword">let</span> fromWidth: <span class="type">CGFloat</span> = <span class="number">4</span>
+  <span class="keyword">let</span> toWidth = containerView.<span class="property">bounds</span>.<span class="property">size</span>.<span class="property">height</span> * <span class="number">1.2</span>
+  
+  <span class="comment">// More code...</span>
+}
+</code></pre><p>Instead of masking, we define a <code>UIBezierPath</code> consisting of a rectangle around the container view and small circular path in the center:</p><pre><code><span class="keyword">let</span> center = containerView.<span class="property">center</span>
+<span class="keyword">let</span> fromPath = <span class="type">UIBezierPath</span>(rect: containerView.<span class="property">bounds</span>)
+<span class="keyword">let</span> fromRect = <span class="type">CGRect</span>(x: center.<span class="property">x</span> - fromWidth/<span class="number">2</span>, y: center.<span class="property">y</span> - fromWidth/<span class="number">2</span>, width: fromWidth, height: fromWidth)
+<span class="keyword">let</span> maskFromPath = <span class="type">UIBezierPath</span>(ovalIn: fromRect)
+fromPath.<span class="call">append</span>(maskFromPath)
+</code></pre><p>In the same way we define a <code>UIBezierPath</code> with a larger frame and a much larger circular path:</p><pre><code><span class="keyword">let</span> toPath = <span class="type">UIBezierPath</span>(rect: containerView.<span class="property">bounds</span>.<span class="call">insetBy</span>(dx: -<span class="number">40</span>, dy: -<span class="number">40</span>))
+<span class="keyword">let</span> toRect = <span class="type">CGRect</span>(x: center.<span class="property">x</span> - toWidth/<span class="number">2</span>, y: center.<span class="property">y</span> - toWidth/<span class="number">2</span>, width: toWidth, height: toWidth)
+<span class="keyword">let</span> maskToPath = <span class="type">UIBezierPath</span>(ovalIn: toRect)
+toPath.<span class="call">append</span>(maskToPath)
+</code></pre><p>Next we need two layers; one for the mask and one for the shadow:</p><pre><code><span class="keyword">let</span> maskLayer = <span class="type">CAShapeLayer</span>()
+maskLayer.<span class="property">frame</span> = containerView.<span class="property">bounds</span>
+maskLayer.<span class="property">fillRule</span> = .<span class="dotAccess">evenOdd</span>
+maskLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+from.<span class="property">view</span>.<span class="property">layer</span>.<span class="property">mask</span> = maskLayer
+
+<span class="keyword">let</span> shadowLayer = <span class="type">CAShapeLayer</span>()
+shadowLayer.<span class="property">frame</span> = containerView.<span class="property">bounds</span>
+shadowLayer.<span class="property">fillRule</span> = .<span class="dotAccess">evenOdd</span>
+shadowLayer.<span class="property">shadowColor</span> = <span class="type">UIColor</span>.<span class="property">black</span>.<span class="property">cgColor</span>
+shadowLayer.<span class="property">shadowOpacity</span> = <span class="number">1</span>
+shadowLayer.<span class="property">shadowRadius</span> = <span class="number">6</span>
+shadowLayer.<span class="property">shadowOffset</span> = .<span class="dotAccess">zero</span>
+shadowLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+from.<span class="property">view</span>.<span class="property">superview</span>!.layer.<span class="call">insertSublayer</span>(shadowLayer, below: from.<span class="property">view</span>.<span class="property">layer</span>)
+</code></pre><p>We have to use the <code>.evenOdd</code> fill rule because other wise the circular path is not punched out. The mask layer is used as the mask of the layer of the <code>from.view</code> like we did in the previous section with the mask view.</p><p>The shape layer is inserted in the layer tree underneath the layer of the <code>from.view</code>. It has the same path and also uses the <code>.evenOdd</code> fill rule.</p><p><code>UIViewPropertyAnimator</code> cannot animate layer properties. We have to fall back to <code>CABasicAnimation</code>:</p><pre><code><span class="type">CATransaction</span>.<span class="call">begin</span>()
+<span class="type">CATransaction</span>.<span class="call">setCompletionBlock</span> {
+  maskLayer.<span class="call">removeFromSuperlayer</span>()
+  shadowLayer.<span class="call">removeFromSuperlayer</span>()
+  
+  <span class="keyword">let</span> complete = !transitionContext.<span class="property">transitionWasCancelled</span>
+  transitionContext.<span class="call">completeTransition</span>(complete)
+}
+
+maskLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+shadowLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+
+<span class="keyword">let</span> animation = <span class="type">CABasicAnimation</span>(keyPath: <span class="string">"path"</span>)
+animation.<span class="property">fromValue</span> = fromPath.<span class="property">cgPath</span>
+animation.<span class="property">toValue</span> = toPath.<span class="property">cgPath</span>
+animation.<span class="property">duration</span> = duration
+animation.<span class="property">timingFunction</span> = <span class="type">CAMediaTimingFunction</span>(name: .<span class="dotAccess">easeIn</span>)
+
+maskLayer.<span class="call">add</span>(animation, forKey: <span class="string">"pathAnimation"</span>)
+shadowLayer.<span class="call">add</span>(animation, forKey: <span class="string">"pathAnimation"</span>)
+
+<span class="type">CATransaction</span>.<span class="call">commit</span>()
+</code></pre><p>The <code>CATransaction</code> let's us define a completion block that gets executed when the animation has finished. In the completion block we remove the layers and complete the transition.</p><p>That's it. We can now add a cool punch out circular transition between view controllers.</p><h2>The Pop Transition</h2><p>The code we have written only manages the push transition. In the pop transition we have to move some code around to make it work. Here is the complete code also handling the pop transition:</p><pre><code><span class="keyword">class</span> MaskTransition: <span class="type">NSObject</span>, <span class="type">UIViewControllerAnimatedTransitioning</span> {
+  
+  <span class="keyword">let</span> duration: <span class="type">TimeInterval</span> = <span class="number">1</span>
+  <span class="keyword">let</span> operation: <span class="type">UINavigationController</span>.<span class="type">Operation</span>
+  
+  <span class="keyword">init</span>(operation: <span class="type">UINavigationController</span>.<span class="type">Operation</span>) {
+    <span class="keyword">self</span>.<span class="property">operation</span> = operation
+    
+    <span class="keyword">super</span>.<span class="keyword">init</span>()
+  }
+  
+  <span class="keyword">func</span> transitionDuration(using transitionContext: <span class="type">UIViewControllerContextTransitioning</span>?) -&gt; <span class="type">TimeInterval</span> {
+    <span class="keyword">return</span> duration
+  }
+  
+  <span class="keyword">func</span> animateTransition(using transitionContext: <span class="type">UIViewControllerContextTransitioning</span>) {
+
+    <span class="keyword">guard let</span> from = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">from</span>),
+      <span class="keyword">let</span> to = transitionContext.<span class="call">viewController</span>(forKey: .<span class="dotAccess">to</span>) <span class="keyword">else</span> {
+        transitionContext.<span class="call">completeTransition</span>(<span class="keyword">false</span>)
+        <span class="keyword">return</span>
+    }
+
+    <span class="keyword">let</span> containerView = transitionContext.<span class="property">containerView</span>
+    <span class="keyword">if</span> operation == .<span class="dotAccess">push</span> {
+      containerView.<span class="call">addSubview</span>(to.<span class="property">view</span>)
+      containerView.<span class="call">addSubview</span>(from.<span class="property">view</span>)
+    } <span class="keyword">else</span> {
+      containerView.<span class="call">addSubview</span>(from.<span class="property">view</span>)
+      containerView.<span class="call">addSubview</span>(to.<span class="property">view</span>)
+    }
+
+    <span class="keyword">let</span> fromWidth: <span class="type">CGFloat</span> = <span class="number">4</span>
+    <span class="keyword">let</span> center = containerView.<span class="property">center</span>
+    <span class="keyword">let</span> fromPath = <span class="type">UIBezierPath</span>(rect: containerView.<span class="property">bounds</span>)
+    <span class="keyword">let</span> fromRect = <span class="type">CGRect</span>(x: center.<span class="property">x</span> - fromWidth/<span class="number">2</span>, y: center.<span class="property">y</span> - fromWidth/<span class="number">2</span>, width: fromWidth, height: fromWidth)
+    <span class="keyword">let</span> maskFromPath = <span class="type">UIBezierPath</span>(ovalIn: fromRect)
+    fromPath.<span class="call">append</span>(maskFromPath)
+    fromPath.<span class="property">usesEvenOddFillRule</span> = <span class="keyword">true
+
+    let</span> toWidth = containerView.<span class="property">bounds</span>.<span class="property">size</span>.<span class="property">height</span> * <span class="number">1.2</span>
+    <span class="keyword">let</span> toPath = <span class="type">UIBezierPath</span>(rect: containerView.<span class="property">bounds</span>.<span class="call">insetBy</span>(dx: -<span class="number">40</span>, dy: -<span class="number">40</span>))
+    <span class="keyword">let</span> toRect = <span class="type">CGRect</span>(x: center.<span class="property">x</span> - toWidth/<span class="number">2</span>, y: center.<span class="property">y</span> - toWidth/<span class="number">2</span>, width: toWidth, height: toWidth)
+    <span class="keyword">let</span> maskToPath = <span class="type">UIBezierPath</span>(ovalIn: toRect)
+    toPath.<span class="call">append</span>(maskToPath)
+    toPath.<span class="property">usesEvenOddFillRule</span> = <span class="keyword">true
+
+    let</span> maskLayer = <span class="type">CAShapeLayer</span>()
+    maskLayer.<span class="property">frame</span> = containerView.<span class="property">bounds</span>
+    maskLayer.<span class="property">fillRule</span> = .<span class="dotAccess">evenOdd</span>
+    <span class="keyword">if</span> operation == .<span class="dotAccess">push</span> {
+      maskLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+      from.<span class="property">view</span>.<span class="property">layer</span>.<span class="property">mask</span> = maskLayer
+    } <span class="keyword">else</span> {
+      maskLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+      to.<span class="property">view</span>.<span class="property">layer</span>.<span class="property">mask</span> = maskLayer
+    }
+
+    <span class="keyword">let</span> shadowLayer = <span class="type">CAShapeLayer</span>()
+    shadowLayer.<span class="property">frame</span> = containerView.<span class="property">bounds</span>
+    shadowLayer.<span class="property">fillRule</span> = .<span class="dotAccess">evenOdd</span>
+    shadowLayer.<span class="property">shadowColor</span> = <span class="type">UIColor</span>.<span class="property">black</span>.<span class="property">cgColor</span>
+    shadowLayer.<span class="property">shadowOpacity</span> = <span class="number">1</span>
+    shadowLayer.<span class="property">shadowRadius</span> = <span class="number">6</span>
+    shadowLayer.<span class="property">shadowOffset</span> = .<span class="dotAccess">zero</span>
+    <span class="keyword">if</span> operation == .<span class="dotAccess">push</span> {
+      shadowLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+      from.<span class="property">view</span>.<span class="property">superview</span>!.layer.<span class="call">insertSublayer</span>(shadowLayer, below: from.<span class="property">view</span>.<span class="property">layer</span>)
+    } <span class="keyword">else</span> {
+      shadowLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+      to.<span class="property">view</span>.<span class="property">superview</span>!.layer.<span class="call">insertSublayer</span>(shadowLayer, below: to.<span class="property">view</span>.<span class="property">layer</span>)
+    }
+
+    <span class="type">CATransaction</span>.<span class="call">begin</span>()
+    <span class="type">CATransaction</span>.<span class="call">setCompletionBlock</span> {
+      maskLayer.<span class="call">removeFromSuperlayer</span>()
+      shadowLayer.<span class="call">removeFromSuperlayer</span>()
+
+      <span class="keyword">let</span> complete = !transitionContext.<span class="property">transitionWasCancelled</span>
+      transitionContext.<span class="call">completeTransition</span>(complete)
+    }
+
+    <span class="keyword">if</span> operation == .<span class="dotAccess">push</span> {
+      maskLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+      shadowLayer.<span class="property">path</span> = toPath.<span class="property">cgPath</span>
+    } <span class="keyword">else</span> {
+      maskLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+      shadowLayer.<span class="property">path</span> = fromPath.<span class="property">cgPath</span>
+    }
+
+    <span class="keyword">let</span> animation = <span class="type">CABasicAnimation</span>(keyPath: <span class="string">"path"</span>)
+    <span class="keyword">if</span> operation == .<span class="dotAccess">push</span> {
+      animation.<span class="property">fromValue</span> = fromPath.<span class="property">cgPath</span>
+      animation.<span class="property">toValue</span> = toPath.<span class="property">cgPath</span>
+    } <span class="keyword">else</span> {
+      animation.<span class="property">fromValue</span> = toPath.<span class="property">cgPath</span>
+      animation.<span class="property">toValue</span> = fromPath.<span class="property">cgPath</span>
+    }
+    animation.<span class="property">duration</span> = duration
+    animation.<span class="property">timingFunction</span> = <span class="type">CAMediaTimingFunction</span>(name: .<span class="dotAccess">easeIn</span>)
+    maskLayer.<span class="call">add</span>(animation, forKey: <span class="string">"pathAnimation"</span>)
+    shadowLayer.<span class="call">add</span>(animation, forKey: <span class="string">"pathAnimation"</span>)
+    <span class="type">CATransaction</span>.<span class="call">commit</span>()
+
+  }
+</code></pre><p>To make it work, we need to pass in the operation in the navigation controller delegate:</p><pre><code><span class="keyword">class</span> NavigationControllerDelegate: <span class="type">NSObject</span>, <span class="type">UINavigationControllerDelegate</span> {
+ 
+  <span class="keyword">func</span> navigationController(<span class="keyword">_</span> navigationController: <span class="type">UINavigationController</span>,
+                            animationControllerFor operation: <span class="type">UINavigationController</span>.<span class="type">Operation</span>,
+                            from fromVC: <span class="type">UIViewController</span>,
+                            to toVC: <span class="type">UIViewController</span>) -&gt; <span class="type">UIViewControllerAnimatedTransitioning</span>? {
+    
+    <span class="keyword">return</span> <span class="type">MaskTransition</span>(operation: operation)
+  }
+}
+</code></pre><h2>Conclusion</h2><p>Custom transitions between view controllers are not easy. But when you finally managed to write custom transitions, most of the times they add some cool personality to your apps.</p><p>Do you add custom transitions to your apps? How do they look like? Did you get feedback from your users about transitions in your app?</p><p>Have you an idea how to achieve the same look without using <code>CALayer</code>s and <code>CABasicAnimation</code>s? Do you have other comments or suggestions? Please let me know on Twitter: <a href="https://twitter.com/dasdom">@dasdom</a>!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://dasdom.dev/posts/adding-a-dev-menu-to-your-app</guid><title>Adding A Development Menu To Your App</title><description>A developer menu can help to speed up development.</description><link>https://dasdom.dev/posts/adding-a-dev-menu-to-your-app</link><pubDate>Tue, 11 Aug 2020 12:00:00 +0200</pubDate><content:encoded><![CDATA[<h1>Adding A Development Menu To Your App</h1><p>Often during development of an iOS app, I need to navigate to the same part of the app over and over again. Or I need to simulate events like discovery of iBeacons without having the iBeacons around. Or I need to test the look of the view with different data.</p><p>To make this and much more easy during development I often add a development menu to the app. When I long press the screen a menu appears that lets me switch to another part of the app or simulate events.</p><img src="../../assets/2020-08-11/dev-menu.png"/><p>Here is how this can easily be added your you UIKit app.</p><p>In this example implementation we want to be able to navigate to an arbitrary view controller and to send notifications via the <code>NotificationCenter</code>. Notifications can be used to trigger arbitrary actions in the apps and they are easy to remove when development is 'finished'. We define the type of the developer actions in the developer menu using an enum:</p><h2>Developer Menu Item</h2><pre><code><span class="keyword">enum</span> DevActionType {
   <span class="keyword">case</span> viewController
   <span class="keyword">case</span> notification
 }
