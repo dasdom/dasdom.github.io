@@ -81,10 +81,14 @@ extension Node where Context == HTML.BodyContext {
   static func footer<T: Website>(for site: T) -> Node {
     return .footer(
       .p(
-        .text("Generated using "),
         .a(
-          .text("Publish"),
-          .href("https://github.com/johnsundell/publish")
+//          .img(
+//            .src("https://cdn.buymeacoffee.com/buttons/arial-orange.png"),
+//            .attribute(named: "alt", value: "Buy Me A Coffee"),
+//            .attribute(named: "style", value: "height: 51px !important;width: 217px !important;")
+//          ),
+          .text("Buy me a coffee"),
+          .href("https://www.buymeacoffee.com/dasdom")
         )
       ),
       .p(
@@ -119,6 +123,13 @@ extension Node where Context == HTML.BodyContext {
         .a(
           .text("My Book"),
           .href("https://pragprog.com/titles/dhios/")
+        )
+      ),
+      .p(
+        .text("Generated using "),
+        .a(
+          .text("Publish"),
+          .href("https://github.com/johnsundell/publish")
         )
       )
     )

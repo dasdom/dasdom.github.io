@@ -17,7 +17,7 @@ The interface builder shows you the distance in points between the two view like
 But this is the distance between the label and the image view.
 What if we need to figure out the distance between text in the label and the image.
 
-In this case we can use a third party tool like xScope as we did in [CGAffineTransform and Auto Layout]({{ $side_url }}/cgaffinetransform-and-auto-layout/).
+In this case we can use a third party tool like xScope as we did in [CGAffineTransform and Auto Layout](../cgaffinetransform-and-auto-layout/).
 But even without such a tool, we can count the pixels.
 Here is how.
 
