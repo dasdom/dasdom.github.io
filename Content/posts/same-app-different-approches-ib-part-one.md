@@ -14,16 +14,14 @@ I think beginners should learn about these different approaches right from the s
 That's why I use all three in my book [Build Location-Bases Projects for iOS](https://pragprog.com/book/dhios/build-location-based-projects-for-ios).
 I'm quite proud of it and I think you should check it out.
 
-![](../../assets/2020-08-25/build_location_based_projects.jpg)
+<img src="../../assets/2020-08-25/build_location_based_projects.jpg" width="40%"/>
 
 In this and the next several blog posts I will show you how to build one app using these different approaches.
 The app we build is a birthday countdown app.
 You can add the birthdays of your loved ones and the app shows you the number of days until their next birthday.
 It will look like this:
 
-![](../../assets/2020-08-25/the_app.png)
-
-(From the number you can reconstruct when I wrote the blog post. ;))
+<img src="../../assets/2020-08-25/the_app.png" width="40%"/>
 
 In this post we will use a Storyboard for the user interface.
 
@@ -75,7 +73,7 @@ Select both labels by clicking one of them and pressing the ⌘ key while you cl
 Then click the Embed button (the one with the arrow pointing into a box) in the lower right corner of the interface builder.
 In the pop up window select Stack View:
 
-![](../../assets/2020-09-25/embed_label_into_stackview.png)
+![](../../assets/2020-08-25/embed_label_into_stackview.png)
 
 Stack views are a very powerful tool to easily create complex layouts.
 They layout their arranged views vertically or horizontally and you only have to configure a few variables.
@@ -231,6 +229,9 @@ class BirthdayCountdownCell: UITableViewCell {
 }
 ```
 
+In this method we just set the name and the remaining days to the labels.
+Nothing special here.
+
 Next open *BirthdaysCountdownViewController.swift*, delete the method `numberOfSections(in:)` and replace the methods `tableView(_:numberOfRowsInSection:)` with the following code:
 
 ```swift
@@ -246,13 +247,39 @@ Add the following method to `BirthdaysCountdownViewController`:
 ```swift
 override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
   
-  let cell = tableView.dequeueReusableCell(withIdentifier: "BirthdayCell", for: indexPath) as! BirthdayCell
+  let cell = tableView.dequeueReusableCell(withIdentifier: "BirthdayCountdownCell", for: indexPath) as! BirthdayCountdownCell
   
-  let birthday = birthdayCounts[indexPath.row]
+  let birthday = birthdayCountdowns[indexPath.row]
   cell.update(with: birthday)
   
   return cell
 }
 ```
 
+In this code, we ask the table view to dequeue a `BirthdayCountdownCell` and then call the `update(with:)` method to fill the cell with data.
 
+Now let's test if the table view works.
+Add the following code to `viewDidLoad()` of `BirthdaysCountdownViewController`:
+
+```swift
+let dateFormatter = DateFormatter()
+dateFormatter.dateFormat = "yyyy-MM-dd"
+if let date = dateFormatter.date(from: "2020-09-01") {
+  birthdaysManager.add(Birthday(name: "Foo", date: date))
+}
+if let date = dateFormatter.date(from: "2020-10-01") {
+  birthdaysManager.add(Birthday(name: "Bar", date: date))
+}
+```
+
+Build and run the app on the iOS simulator.
+You should see something like this:
+
+<img src="../../assets/2020-08-25/result_with_demo_data.png" width="40%"/>
+
+## Conclusion
+
+The app is not finished yet but this blog post is already getting to long.
+We will build the view on which the user can put in birthdays in the next blog post.
+
+Let me know what you think about this blog post on Twitter: [@dasdom](https://twitter.com/dasdom).
