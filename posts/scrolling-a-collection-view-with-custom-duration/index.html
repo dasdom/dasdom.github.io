@@ -1,0 +1,61 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="dasdom"/><link rel="canonical" href="https://dasdom.dev/posts/scrolling-a-collection-view-with-custom-duration"/><meta name="twitter:url" content="https://dasdom.dev/posts/scrolling-a-collection-view-with-custom-duration"/><meta name="og:url" content="https://dasdom.dev/posts/scrolling-a-collection-view-with-custom-duration"/><title>Scrolling A Collection View With Costum Duration Using CADisplayLink | dasdom</title><meta name="twitter:title" content="Scrolling A Collection View With Costum Duration Using CADisplayLink | dasdom"/><meta name="og:title" content="Scrolling A Collection View With Costum Duration Using CADisplayLink | dasdom"/><meta name="description" content="Swift, iOS, ObjC and stuff"/><meta name="twitter:description" content="Swift, iOS, ObjC and stuff"/><meta name="og:description" content="Swift, iOS, ObjC and stuff"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to dasdom"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">dasdom</a><nav><ul><li><a class="selected" href="/posts">Posts</a></li><li><a href="/books">Books</a></li><li><a href="/about">About</a></li><li><a href="/imprint">Imprint</a></li><li><a href="/privacy">Privacy</a></li></ul></nav></div></header><div class="wrapper"><p>1. Sep 2020</p><article><div class="content"><h1>Scrolling A Collection View With Costum Duration Using CADisplayLink</h1><p>Last week I needed to scroll a collection view animated to its end with a define duration. Should be easy, right? Just set the content offset of the collection view in an animation block like this:</p><pre><code><span class="type">UIViewPropertyAnimator</span>.<span class="call">runningPropertyAnimator</span>(withDuration: <span class="number">1</span>, delay: <span class="number">0</span>, options: .<span class="dotAccess">curveEaseInOut</span>, animations: {
+  <span class="keyword">self</span>.<span class="property">collectionView</span>.<span class="property">contentOffset</span>.<span class="property">y</span> = <span class="keyword">self</span>.<span class="property">maxOffset</span>
+}, completion: <span class="keyword">nil</span>)
+</code></pre><p>The result looks like this:</p><img src="../../assets/2020-09-01/scrolling_with_animator.gif"/><p>Oh, that was unexpected. It does indeed animate the content offset of the collection view but during the animation the cells aren't rendered. Only the cells visible in the final position are dequeued and setup.</p><p>If we add a print message to <code>collectionView(_:cellForItemAt:)</code> we can see in the debug output that the data source method is only called for the cells visible after the animation has finished:</p><pre><code>indexPath.<span class="property">row</span>: <span class="number">0</span>
+indexPath.<span class="property">row</span>: <span class="number">1</span>
+indexPath.<span class="property">row</span>: <span class="number">2</span>
+indexPath.<span class="property">row</span>: <span class="number">3</span>
+indexPath.<span class="property">row</span>: <span class="number">4</span>
+indexPath.<span class="property">row</span>: <span class="number">5</span>
+indexPath.<span class="property">row</span>: <span class="number">6</span>
+indexPath.<span class="property">row</span>: <span class="number">7</span>
+indexPath.<span class="property">row</span>: <span class="number">992</span>
+indexPath.<span class="property">row</span>: <span class="number">993</span>
+indexPath.<span class="property">row</span>: <span class="number">994</span>
+indexPath.<span class="property">row</span>: <span class="number">995</span>
+indexPath.<span class="property">row</span>: <span class="number">996</span>
+indexPath.<span class="property">row</span>: <span class="number">997</span>
+indexPath.<span class="property">row</span>: <span class="number">998</span>
+indexPath.<span class="property">row</span>: <span class="number">999</span>
+</code></pre><p>To get the collection view to render the cells (to call the data source method), we need to implement the animated scrolling ourselves. We could try to use a timer that is configured to fire 60 times per second and changed the content offset of the collection view in the action of the timer. The problem is, iOS doesn't guarantee the exact timing of a timer and we would have to figure out the refresh rate of the screen our app is running on.</p><p>There is a better solution: CADisplayLink. CADisplayLink is a class that is connected to the refresh mechanism of the screen. It calls a method we define after a frame finished rendering and we can setup the content of the screen accordingly. And it's quite easy to use.</p><h2>Using CADisplayLink</h2><p>First we need to setup the display link:</p><pre><code><span class="keyword">@objc func</span> scrollDownDisplayLink() {
+  <span class="keyword">if</span> displayLink == <span class="keyword">nil</span> {
+    displayLink = <span class="type">CADisplayLink</span>(target: <span class="keyword">self</span>, selector: <span class="keyword">#selector</span>(updateScrollPosition))
+    displayLink?.<span class="call">add</span>(to: .<span class="dotAccess">current</span>, forMode: .<span class="dotAccess">default</span>)
+  }
+}
+</code></pre><p>In this code we tell the display link that it should call the method <code>updateScrollPosition()</code> after each screen rendering. The method should calculate the new scroll position based on the animation curve and the elapsed time. This is a possible implementation:</p><pre><code><span class="keyword">@objc func</span> updateScrollPosition() {
+  <span class="keyword">guard let</span> displayLink = displayLink <span class="keyword">else</span> {
+    <span class="keyword">return</span>
+  }
+  
+  <span class="comment">// get timestamp at start of animation</span>
+  <span class="keyword">if</span> startTimestamp &lt; <span class="number">1</span> {
+    startTimestamp = displayLink.<span class="property">timestamp</span>
+    startOffset = collectionView.<span class="property">contentOffset</span>.<span class="property">y</span>
+    <span class="keyword">return</span>
+  }
+  
+  <span class="comment">// calculate fraction of animation; 0: start; 1: end</span>
+  <span class="keyword">let</span> fraction = (displayLink.<span class="property">targetTimestamp</span> - startTimestamp) / duration
+  <span class="keyword">if</span> fraction &gt; <span class="number">1</span> || previousFraction &gt; fraction {
+    <span class="comment">// animation is finished</span>
+    displayLink.<span class="call">invalidate</span>()
+    <span class="keyword">self</span>.<span class="property">displayLink</span> = <span class="keyword">nil</span>
+    startTimestamp = <span class="number">0</span>
+    previousFraction = <span class="number">0</span>
+    <span class="comment">// scroll to final point just to make sure</span>
+    collectionView.<span class="call">setContentOffset</span>(<span class="type">CGPoint</span>(x: <span class="number">0</span>, y: maxOffset), animated: <span class="keyword">false</span>)
+  } <span class="keyword">else</span> {
+    <span class="comment">// calculate offset for this frame of the animation</span>
+    <span class="keyword">let</span> offset = (maxOffset - startOffset) * <span class="type">CGFloat</span>(<span class="call">easeInOut</span>(for: fraction)) + startOffset
+    collectionView.<span class="property">contentOffset</span>.<span class="property">y</span> = offset
+    previousFraction = fraction
+  }
+}
+
+<span class="comment">// https://stackoverflow.com/a/25730573/498796</span>
+<span class="keyword">private func</span> easeInOut(for fraction: <span class="type">Double</span>) -&gt; <span class="type">Double</span> {
+  <span class="keyword">return</span> fraction * fraction * (<span class="number">3.0</span> - <span class="number">2.0</span> * fraction)
+}
+</code></pre><p>In this code, we first figure out if the start time stamp is already set. We need this to calculate the fraction of the animation for the next screen update. Next we calculate this fraction. If the result is larger than 1, the animation is finished and we invalidate and clean up the display link.</p><p>Otherwise we calculate the new offset using the method <code>easeInOut(for:)</code>. This method takes the time fraction of the animation as a parameter and returns the fraction of the animation. This is how animation curves work. For any given fraction of time of the animation there is a fraction of animation value (in this case scroll offset).</p><p>Using this code the animation looks like this:</p><img src="../../assets/2020-09-01/scrolling_with_cadisplaylink.gif"/><h2>Conclusion</h2><p>It's a bit unexpected that there is no easy build-in way to scroll a collection view to a desired offset. Maybe there is and I wasn't patient enough to find it. If you know a better way to do this, please let me know.</p><p>Fortunately <code>CADisplayLink</code> is easy to use.</p><p>If you have comments or remarks about this post, let me know on Twitter: <a href="https://twitter.com/dasdom">@dasdom</a></p><h2>My Book</h2><p>Are you a beginner in iOS and want to learn something about GPS, maps and sensors while having fun? Check out <a href="https://pragprog.com/titles/dhios/build-location-based-projects-for-ios/">my new book</a>:</p><img src="../../assets/2020-09-01/build_location_based_projects.jpg" width="40%">
+</div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/animation">Animation</a></li><li><a href="/tags/uicollectionview">UICollectionView</a></li><li><a href="/tags/cadisplaylink">CADisplayLink</a></li></ul></article></div><footer><p><a href="https://www.buymeacoffee.com/dasdom">Buy me a coffee</a></p><p><a href="/feed.rss">RSS feed</a><a> | </a><a href="https://twitter.com/dasdom">Twitter</a><a> | </a><a href="https://stackoverflow.com/users/498796/dasdom">StackOverflow</a><a> | </a><a href="https://github.com/dasdom">Github</a><a> | </a><a href="https://pragprog.com/titles/dhios/">My Book</a></p><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p></footer></body></html>
