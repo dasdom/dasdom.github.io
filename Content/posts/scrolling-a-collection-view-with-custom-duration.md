@@ -109,7 +109,7 @@ private func easeInOut(for fraction: Double) -> Double {
 
 In this code, we first figure out if the start time stamp is already set.
 We need this to calculate the fraction of the animation for the next screen update.
-Next we calculate this fraction.
+Next we calculate this fraction (formula from [here](https://stackoverflow.com/a/25730573/498796).
 If the result is larger than 1 or smaller than the previous fraction, the animation is finished and we invalidate and clean up the display link.
 
 Otherwise we calculate the new offset using the method `easeInOut(for:)`.
