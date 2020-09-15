@@ -1,5 +1,6 @@
 ---
 date: 2020-08-25 12:00
+description: In MVC your view code should not live within the view controller. Use a view subclass instead.
 tags: Interface Builder, MVC, View, View Controller
 ---
 

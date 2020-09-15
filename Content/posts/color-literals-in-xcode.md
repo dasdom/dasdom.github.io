@@ -1,5 +1,6 @@
 ---
 date: 2020-09-08 12:00
+description: How to define colors in Xcode.
 tags: Xcode, Color Literal, UIColor, Extension
 ---
 

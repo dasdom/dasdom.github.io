@@ -1,9 +1,10 @@
 ---
 2020-09-01 12:00
+description: How to scroll a collection view with defined animation duration and animation curve.
 tags: Animation, UICollectionView, CADisplayLink
 ---
 
-# Scrolling A Collection View With Costum Duration Using CADisplayLink
+# Scrolling A Collection View With Custom Duration Using CADisplayLink
 
 Last week I needed to scroll a collection view animated to its end with a define duration.
 Should be easy, right?
