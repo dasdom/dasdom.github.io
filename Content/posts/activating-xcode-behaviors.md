@@ -1,5 +1,6 @@
 ---
 date: 2020-09-15 12:00
+description: Xcode Behaviors can switch automatically what is shown in Xcode depending on the context.
 tags: Xcode, Behaviors, Automation
 ---
 
