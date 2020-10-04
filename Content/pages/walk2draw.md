@@ -6,7 +6,7 @@ title: Walk2Draw
 
 ## Privacy Policy
 
-Walk2Draw does not collect any data.
+Walk2Draw does collect location data to draw a path on a map. This data does not leave the iPhone and is removed when a new recording is started.
 
 ## Third party code
 
