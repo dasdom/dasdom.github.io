@@ -28,7 +28,7 @@ struct MyBlog: Website {
 
 // This will generate your website using the built-in Foundation theme:
 try MyBlog().publish(withTheme: .simple,
-                     deployedUsing: .gitHub("dasdom/dasdom.github.io", useSSH: true),
+                     deployedUsing: .gitHub("dasdom/dasdom.github.io", useSSH: false),
                      additionalSteps: [
   .addMarkdownFiles(at: "Content/pages"),
   ],
