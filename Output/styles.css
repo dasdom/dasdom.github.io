@@ -155,7 +155,7 @@ footer {
 img {
   max-width: 100%;
   display: block;
-  margin: 20px auto;
+  margin: 40px auto;
 }
 
 iframe {
@@ -169,7 +169,7 @@ pre {
   font-family: monospace;
   line-height: 150%;
   white-space: pre;
-  margin: 1em 0em;
+  margin: 4em 0em;
   padding: 1em;
   overflow: auto;
   background-color: #eee;
