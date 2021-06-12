@@ -1,0 +1,73 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="dasdom"/><link rel="canonical" href="https://dasdom.dev/posts/testing-the-untestable"/><meta name="twitter:url" content="https://dasdom.dev/posts/testing-the-untestable"/><meta name="og:url" content="https://dasdom.dev/posts/testing-the-untestable"/><title>Testing the "Untestable" | dasdom</title><meta name="twitter:title" content="Testing the "Untestable" | dasdom"/><meta name="og:title" content="Testing the "Untestable" | dasdom"/><meta name="description" content="User interface is considered to be untestable. But this is not true. Before SwiftUI user interfaces could be tested. Here is why I think this is useful."/><meta name="twitter:description" content="User interface is considered to be untestable. But this is not true. Before SwiftUI user interfaces could be tested. Here is why I think this is useful."/><meta name="og:description" content="User interface is considered to be untestable. But this is not true. Before SwiftUI user interfaces could be tested. Here is why I think this is useful."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to dasdom"/></head><body class="item-page"><header><div class="wrapper"><a class="site-name" href="/">dasdom</a><nav><ul><li><a class="selected" href="/posts">Posts</a></li><li><a href="/books">Books</a></li><li><a href="/about">About</a></li><li><a href="/imprint">Imprint</a></li><li><a href="/privacy">Privacy</a></li></ul></nav></div></header><div class="wrapper"><p>12 Jun 2021</p><article><div class="content"><h1>Testing the "Untestable"</h1><p>I often complain on Twitter that SwiftUI code is not testable with unit tests. Every time I get asked what the value of such tests would be.</p><p>Why should anyone write unit tests for user interface code? Is that even possible? And wouldn't the testers see bugs in the user interface immediately? So why the hurdle?</p><h2>The situation</h2><p>Let's assume there is a team of 2 iOS devs (Masha and Bill) working on a Twitter client. It's old code and therefore it is still written partly in ObjC. The storyboard of one of the parts of the app looks like this:</p><img src="../../assets/2021-06-12/storyboard.png" width="400"/><p>When the user taps the Tweet button, the compose view is presented modally. But there is a hidden feature. When the user press and holds the Tweet button, a view with the tweet drafts of the user is presented (as it is implemented in the official Twitter iOS app). The users who know this feature use it quite often.</p><p>The relevant code looks like this:</p><pre><code><span class="keyword">@interface</span> <span class="type">TweetsViewController</span> ()
+<span class="keyword">@property</span> (weak, nonatomic) <span class="type">IBOutlet UIButton</span> *tweetButton;
+<span class="keyword">@end
+
+@implementation</span> <span class="type">TweetsViewController</span>
+
+- (void)<span class="call">viewDidLoad</span> {
+  [<span class="keyword">super</span> viewDidLoad];
+  
+  <span class="type">UILongPressGestureRecognizer</span> *longPressRecognizer = 
+    [[<span class="type">UILongPressGestureRecognizer</span> alloc]
+     initWithTarget:<span class="keyword">self</span>
+     action:<span class="keyword">@selector</span>(showDrafts:)];
+  [<span class="keyword">self</span>.<span class="property">tweetButton</span> addGestureRecognizer:longPressRecognizer];
+}
+
+- (void)showDrafts:(<span class="type">UIGestureRecognizer</span> *)<span class="call">sender</span> {
+  [<span class="keyword">self</span> performSegueWithIdentifier:<span class="string">@"showDrafts" sender:self];</span>
+}
+
+<span class="keyword">@end</span>
+</code></pre><h2>Refactoring to Swift</h2><p>The team decides to refactor to Swift. They know that refactoring code is dangerous and can break things. Marsha read in a book about good software development practice that one should add tests before refactoring to make it easier.</p><p>Among others they add the following test:</p><pre><code><span class="keyword">func</span> test_longPressTweetButton_presentsDraftsViewControllerModally() <span class="keyword">throws</span> {
+  <span class="call">addTeardownBlock</span> {
+    <span class="keyword">self</span>.<span class="call">tearDownPresentation</span>(in: <span class="keyword">self</span>.<span class="property">sut</span>)
+  }
+  <span class="keyword">let</span> button = <span class="keyword">try</span> <span class="type">XCTUnwrap</span>(sut.<span class="call">value</span>(forKey: <span class="string">"tweetButton"</span>) <span class="keyword">as</span>? <span class="type">UIButton</span>)
+  <span class="keyword">let</span> longPress = <span class="keyword">try</span> <span class="type">XCTUnwrap</span>(button.<span class="property">gestureRecognizers</span>?
+                                  .<span class="call">first</span>(where: { gestureRecognizer <span class="keyword">in
+    return</span> gestureRecognizer <span class="keyword">is</span> <span class="type">UILongPressGestureRecognizer</span>
+  }))
+  
+  longPress.<span class="property">state</span> = .<span class="dotAccess">ended</span>
+  
+  <span class="keyword">let</span> asyncExpectation = <span class="call">expectation</span>(description: <span class="string">"async"</span>)
+  <span class="type">DispatchQueue</span>.<span class="property">main</span>.<span class="call">asyncAfter</span>(deadline: .<span class="call">now</span>() + .<span class="call">milliseconds</span>(<span class="number">100</span>)) {
+    asyncExpectation.<span class="call">fulfill</span>()
+  }
+  <span class="call">wait</span>(for: [asyncExpectation], timeout: <span class="number">1</span>)
+  <span class="call">XCTAssertTrue</span>(sut.<span class="property">presentedViewController</span> <span class="keyword">is</span> <span class="type">TweetDraftsViewController</span>))<span class="string">")</span>
+}
+</code></pre><p>This test fetches the long press gesture recogniser attached to the tweet button and executes it. Then it asserts that an instance of <code>TweetDraftsViewController</code> is presented modally. How this test works is not important for this article.</p><p>While refactoring to Swift Bill forgets to add the long press gesture recogniser because he never uses it. (Don't blame Bill for this. This code looks easy here because I want to make my point clear. In reality code is never that easy and straight forward.)</p><pre><code><span class="keyword">import</span> UIKit
+
+<span class="keyword">class</span> TweetsViewController: <span class="type">UIViewController</span> {
+  
+  <span class="keyword">@IBOutlet weak private(set) var</span> tweetButton: <span class="type">UIButton</span>!
+}
+</code></pre><p>He runs the tests and gets a reminder that there is a feature missing.</p><img src="../../assets/2021-06-12/test_failure_swift_refactor.png"/><p>The tests showed the regression right away without letting internal testers or beta testers using the app. So the bug didn't feel like a bug. It felt more like integrated in the development process.</p><p>Bill fixes the bug:</p><pre><code><span class="keyword">import</span> UIKit
+
+<span class="keyword">class</span> TweetsViewController: <span class="type">UIViewController</span> {
+  
+  <span class="keyword">@IBOutlet weak private(set) var</span> tweetButton: <span class="type">UIButton</span>!
+  
+  <span class="keyword">override func</span> viewDidLoad() {
+    <span class="keyword">super</span>.<span class="call">viewDidLoad</span>()
+    
+    <span class="keyword">let</span> longPressRecognizer = 
+      <span class="type">UILongPressGestureRecognizer</span>(target: <span class="keyword">self</span>,
+                                   action: <span class="keyword">#selector</span>(<span class="call">showDrafts</span>(<span class="keyword">_</span>:)))
+    tweetButton.<span class="call">addGestureRecognizer</span>(longPressRecognizer)
+  }
+  
+  <span class="keyword">@objc func</span> showDrafts(<span class="keyword">_</span> sender: <span class="type">UIGestureRecognizer</span>) {
+    <span class="call">performSegue</span>(withIdentifier: <span class="string">"showDrafts"</span>, sender: <span class="keyword">self</span>)
+  }
+}
+</code></pre><p>They ship a new version and everyone is happy.</p><p>A few month later Masha accepts a job offer from Apple and Dana joins the team. Dana does not like Storyboads and convinces Bill to switch to user interface in code.</p><h2>Refactoring away from Storyboard</h2><p>She refactors the <code>TweetsViewController</code> away from the Storyboard and is happy that there are unit tests that help with the expected features. After refactoring Dana runs the tests and get a failure.</p><img src="../../assets/2021-06-12/test_failure_storyboard_refactor.png"/><p>Here is the regression. Can you spot it?</p><pre><code><span class="keyword">override func</span> loadView() {
+  <span class="keyword">let</span> contentView = <span class="type">TweetsView</span>()
+  contentView.<span class="property">tweetButton</span>.<span class="call">addTarget</span>(<span class="keyword">self</span>,
+                                    action: <span class="keyword">#selector</span>(<span class="call">showCompose</span>(<span class="keyword">_</span>:)),
+                                    for: .<span class="dotAccess">touchDown</span>)
+  view = contentView
+}
+</code></pre><p>The reason for the test failure is that she selected the wrong <code>UIControl.Event</code> in the auto completion. Instead of using <code>.touchUpInside</code> she selected <code>.touchDown</code>. This bug is especially interesting because while using the app it looks like composing still works but the long press gesture seems broken.</p><p>With the help of the test, she can quickly fix the bug.</p><h2>Refactoring to SwiftUI</h2><p>Dana and Bill watched some of the sessions in WWDC21 and decide to switch to SwiftUI. SwiftUI is not testable with unit tests. Their only option is to add UI tests. But in the past when ever they used UI tests they stopped running them after a few days because they where painfully slow and they often broke.</p><h2>The value of unit tests</h2><p>For me the value of unit tests it that they are fast, reliable and easy to write. They sit in your project, making sure that the tested features keep working. The team can refactor fearlessly. This way the code can held in good shape without breaking tested features.</p><p>You can even use unit tests to get used to unknown frameworks. And you can add unit tests to write down all the features a component needs to implement. By doing so, you can focus on small pieces of functionality and the tests help with the bigger picture.</p><h2>Feedback</h2><p>I wrote a feedback about that in 2019 (FB6134940). It is still open. I do not expect that Apple will make SwiftUI testable. People in charge seem to see not value in that. This post shows my point of view.</p></div><span>Tagged with: </span><ul class="tag-list"><li><a href="/tags/swiftui">SwiftUI</a></li><li><a href="/tags/unit-tests">Unit Tests</a></li><li><a href="/tags/xctest">XCTest</a></li><li><a href="/tags/uikit">UIKit</a></li><li><a href="/tags/objectivec">Objective-C</a></li><li><a href="/tags/swift">Swift</a></li></ul></article></div><footer><p><a href="https://www.buymeacoffee.com/dasdom">Buy me a coffee</a></p><p><a href="/feed.rss">RSS feed</a><a> | </a><a href="https://twitter.com/dasdom">Twitter</a><a> | </a><a href="https://stackoverflow.com/users/498796/dasdom">StackOverflow</a><a> | </a><a href="https://github.com/dasdom">Github</a><a> | </a><a href="https://pragprog.com/titles/dhios/">My Book</a></p><p>Generated using <a href="https://github.com/johnsundell/publish">Publish</a></p></footer></body></html>
