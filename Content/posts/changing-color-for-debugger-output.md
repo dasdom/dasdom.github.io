@@ -16,12 +16,12 @@ This can be done by adding the Debugger Command `po myVariable` to a breakpoint 
 
 ## Debugger Console Output Color
 
-To make this output easier to find the the debug output, we can change its color.
+To make this output easier to find in the debug output, we can change its color.
 Open Preferences of Xcode and navigate to ‘Themes / Console’.
 Then change the color of ‘Debugger Console Output’ to the color you like:
 
 <img src="../../assets/2021-07-10/change_color_debug_ouput.png" width="500"/>
 
-After you have done that, the output from ‘print’ statements can easily be differentiated from the noise:
+After you have done that, the `po` output from breakpoints can easily be differentiated from the noise:
 
 <img src="../../assets/2021-07-10/debug_output_with_color.png" width="500"/>
