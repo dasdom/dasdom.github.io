@@ -105,9 +105,9 @@ He runs the tests and gets a reminder that there is a feature missing.
 
 ![](../../assets/2021-06-12/test_failure_swift_refactor.png)
 
-The tests showed the regression right away without letting internal testers or beta testers using the app.
+The tests showed the regression right away without letting internal testers or beta testers use the app.
 So the bug didn't feel like a bug.
-It felt more like integrated in the development process.
+It felt more like a small issue in the development process.
 
 Bill fixes the bug:
 
@@ -176,7 +176,7 @@ But in the past when ever they used UI tests they stopped running them after a f
 For me the value of unit tests it that they are fast, reliable and easy to write.
 They sit in your project, making sure that the tested features keep working.
 The team can refactor fearlessly.
-This way the code can held in good shape without breaking tested features.
+This way the code can be held in good shape without breaking tested features.
 
 You can even use unit tests to get used to unknown frameworks.
 And you can add unit tests to write down all the features a component needs to implement.
