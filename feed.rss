@@ -1,33 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>dasdom</title><description>Articles about TDD, Xcode, iOS, Swift, ObjC and stuff by Dominik Hauser.</description><link>https://dasdom.dev</link><language>en</language><lastBuildDate>Thu, 22 Jul 2021 10:26:52 +0200</lastBuildDate><pubDate>Thu, 22 Jul 2021 10:26:52 +0200</pubDate><ttl>250</ttl><atom:link href="https://dasdom.dev/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://dasdom.dev/posts/test-change-of-published-property</guid><title>Test The Publisher Of A @Published Property</title><description>How to test the publisher of a @Published property.</description><link>https://dasdom.dev/posts/test-change-of-published-property</link><pubDate>Thu, 22 Jul 2021 12:00:00 +0200</pubDate><content:encoded><![CDATA[<h1>Test The Publisher Of A @Published Property</h1><p><a href="https://twitter.com/johnsundell">John Sundell</a> wrote a <a href="https://www.swiftbysundell.com/articles/unit-testing-combine-based-swift-code/">blog post</a> about how to test Combine-based code. In the article he shows how to write unit tests for a publisher that tokenises a string. Great article as always and you should read it.</p><p>This blog post here is just a reminder for me how to change Johns <code>XCTestCase</code> extension to test the publisher of a <code>@Published</code> property. Without further ado here is the extension:</p><pre><code><span class="keyword">func</span> _awaitPublishedChange&lt;T: <span class="type">Publisher</span>&gt;(
-  <span class="keyword">_</span> publisher: <span class="type">T</span>,
-  changeAction: () -&gt; <span class="type">Void</span> = {},
-  timeout: <span class="type">TimeInterval</span> = <span class="number">1</span>,
-  file: <span class="type">StaticString</span> = <span class="keyword">#file</span>,
-  line: <span class="type">UInt</span> = <span class="keyword">#line</span>
-) <span class="keyword">throws</span> -&gt; <span class="type">T</span>.<span class="type">Output</span> <span class="keyword">where</span> <span class="type">T</span>.<span class="type">Failure</span> == <span class="type">Never</span> {
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>dasdom</title><description>Articles about TDD, Xcode, iOS, Swift, ObjC and stuff by Dominik Hauser.</description><link>https://dasdom.dev</link><language>en</language><lastBuildDate>Thu, 22 Jul 2021 10:31:45 +0200</lastBuildDate><pubDate>Thu, 22 Jul 2021 10:31:45 +0200</pubDate><ttl>250</ttl><atom:link href="https://dasdom.dev/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://dasdom.dev/posts/test-change-of-published-property</guid><title>Test The Publisher Of A @Published Property</title><description>How to test the publisher of a @Published property.</description><link>https://dasdom.dev/posts/test-change-of-published-property</link><pubDate>Thu, 22 Jul 2021 12:00:00 +0200</pubDate><content:encoded><![CDATA[<h1>Test The Publisher Of A @Published Property</h1><p><a href="https://twitter.com/johnsundell">John Sundell</a> wrote a <a href="https://www.swiftbysundell.com/articles/unit-testing-combine-based-swift-code/">blog post</a> about how to test Combine-based code. In the article he shows how to write unit tests for a publisher that tokenises a string. Great article as always and you should read it.</p><p>This blog post here is just a reminder for me how to change Johns <code>XCTestCase</code> extension to test the publisher of a <code>@Published</code> property. Without further ado here is the extension:</p><pre><code><span class="keyword">extension</span> <span class="type">XCTestCase</span> {
+  <span class="keyword">func</span> _awaitPublishedChange&lt;T: <span class="type">Publisher</span>&gt;(
+    <span class="keyword">_</span> publisher: <span class="type">T</span>,
+    changeAction: () -&gt; <span class="type">Void</span> = {},
+    timeout: <span class="type">TimeInterval</span> = <span class="number">1</span>,
+    file: <span class="type">StaticString</span> = <span class="keyword">#file</span>,
+    line: <span class="type">UInt</span> = <span class="keyword">#line</span>
+  ) <span class="keyword">throws</span> -&gt; <span class="type">T</span>.<span class="type">Output</span> <span class="keyword">where</span> <span class="type">T</span>.<span class="type">Failure</span> == <span class="type">Never</span> {
 
-  <span class="keyword">var</span> result: <span class="type">Result</span>&lt;<span class="type">T</span>.<span class="type">Output</span>, <span class="type">Error</span>&gt;?
-  <span class="keyword">let</span> expectation = <span class="keyword">self</span>.<span class="call">expectation</span>(description: <span class="string">"Awaiting publisher"</span>)
+    <span class="keyword">var</span> result: <span class="type">Result</span>&lt;<span class="type">T</span>.<span class="type">Output</span>, <span class="type">Error</span>&gt;?
+    <span class="keyword">let</span> expectation = <span class="keyword">self</span>.<span class="call">expectation</span>(description: <span class="string">"Awaiting publisher"</span>)
   
-  <span class="keyword">let</span> cancellable = publisher
-    .<span class="call">dropFirst</span>()
-    .<span class="call">sink</span>(receiveValue: { value <span class="keyword">in</span>
-      result = .<span class="call">success</span>(value)
-      expectation.<span class="call">fulfill</span>()
-    })
+    <span class="keyword">let</span> cancellable = publisher
+      .<span class="call">dropFirst</span>()
+      .<span class="call">sink</span>(receiveValue: { value <span class="keyword">in</span>
+        result = .<span class="call">success</span>(value)
+        expectation.<span class="call">fulfill</span>()
+      })
     
-  <span class="call">changeAction</span>()
-  <span class="call">waitForExpectations</span>(timeout: timeout)
-  cancellable.<span class="call">cancel</span>()
+    <span class="call">changeAction</span>()
+    <span class="call">waitForExpectations</span>(timeout: timeout)
+    cancellable.<span class="call">cancel</span>()
   
-  <span class="keyword">let</span> unwrappedResult = <span class="keyword">try</span> <span class="type">XCTUnwrap</span>(
-    result,
-    <span class="string">"Awaited publisher did not produce any output"</span>,
-    file: file,
-    line: line
-  )
+    <span class="keyword">let</span> unwrappedResult = <span class="keyword">try</span> <span class="type">XCTUnwrap</span>(
+      result,
+      <span class="string">"Awaited publisher did not produce any output"</span>,
+      file: file,
+      line: line
+    )
   
-  <span class="keyword">return try</span> unwrappedResult.<span class="call">get</span>()
+    <span class="keyword">return try</span> unwrappedResult.<span class="call">get</span>()
+  }
 }
 </code></pre><p>And this is how to use it:</p><pre><code><span class="keyword">func</span> test_addEvent_shouldPublishChangedEvents() <span class="keyword">throws</span> {
   <span class="keyword">let</span> fileManagerMock = <span class="type">FileManagerProtocolMock</span>()
