@@ -21,7 +21,7 @@ struct MyBlog: Website {
   // Update these properties to configure your website:
   var url = URL(string: "https://dasdom.dev")!
   var name = "dasdom"
-  var description = "Swift, iOS, ObjC and stuff"
+  var description = "Articles about TDD, Xcode, iOS, Swift, ObjC and stuff by Dominik Hauser."
   var language: Language { .english }
   var imagePath: Path? { nil }
 }
