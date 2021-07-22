@@ -14,36 +14,38 @@ This blog post here is just a reminder for me how to change Johns `XCTestCase` e
 Without further ado here is the extension:
 
 ```swift
-func _awaitPublishedChange<T: Publisher>(
-  _ publisher: T,
-  changeAction: () -> Void = {},
-  timeout: TimeInterval = 1,
-  file: StaticString = #file,
-  line: UInt = #line
-) throws -> T.Output where T.Failure == Never {
+extension XCTestCase {
+  func _awaitPublishedChange<T: Publisher>(
+    _ publisher: T,
+    changeAction: () -> Void = {},
+    timeout: TimeInterval = 1,
+    file: StaticString = #file,
+    line: UInt = #line
+  ) throws -> T.Output where T.Failure == Never {
 
-  var result: Result<T.Output, Error>?
-  let expectation = self.expectation(description: "Awaiting publisher")
+    var result: Result<T.Output, Error>?
+    let expectation = self.expectation(description: "Awaiting publisher")
   
-  let cancellable = publisher
-    .dropFirst()
-    .sink(receiveValue: { value in
-      result = .success(value)
-      expectation.fulfill()
-    })
+    let cancellable = publisher
+      .dropFirst()
+      .sink(receiveValue: { value in
+        result = .success(value)
+        expectation.fulfill()
+      })
     
-  changeAction()
-  waitForExpectations(timeout: timeout)
-  cancellable.cancel()
+    changeAction()
+    waitForExpectations(timeout: timeout)
+    cancellable.cancel()
   
-  let unwrappedResult = try XCTUnwrap(
-    result,
-    "Awaited publisher did not produce any output",
-    file: file,
-    line: line
-  )
+    let unwrappedResult = try XCTUnwrap(
+      result,
+      "Awaited publisher did not produce any output",
+      file: file,
+      line: line
+    )
   
-  return try unwrappedResult.get()
+    return try unwrappedResult.get()
+  }
 }
 ```
 
