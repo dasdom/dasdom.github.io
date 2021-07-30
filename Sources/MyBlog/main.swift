@@ -30,7 +30,7 @@ struct MyBlog: Website {
 try MyBlog().publish(withTheme: .simple,
                      deployedUsing: .gitHub("dasdom/dasdom.github.io", useSSH: false),
                      additionalSteps: [
-  .addMarkdownFiles(at: "Content/pages"),
+  .addMarkdownFiles(at: "Content/pages")
   ],
   plugins: [.splash(withClassPrefix: "")]
 )
