@@ -83,6 +83,18 @@ a {
     color: inherit;
 }
 
+ul {
+  padding: 1em;
+}
+
+ol {
+  padding: 1em;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
 .description {
     margin-bottom: 40px;
 }
