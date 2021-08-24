@@ -74,6 +74,10 @@ h2 {
     margin: 20px 0;
 }
 
+h3 {
+  margin-bottom: 10px;
+}
+
 p {
     margin-bottom: 10px;
     line-height: 120%;
@@ -88,7 +92,7 @@ ul {
 }
 
 ol {
-  padding: 1em;
+  padding: 1.4em;
 }
 
 li {
@@ -122,6 +126,7 @@ li {
 
 .tag-list {
     margin-bottom: 15px;
+    padding: 0;
 }
 
 .tag-list li,
