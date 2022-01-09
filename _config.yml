@@ -37,9 +37,10 @@ plugins:
   - jekyll-feed
 
 header_pages:
-    - about.markdown
+    - about.md
     - books.md
     - privacy.md
+    - imprint.md
 
 show_excerpts: true
 
