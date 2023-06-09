@@ -9,7 +9,7 @@ This app does not collect any data.
 
 ## Third party code
 
-No third party code is used.
+For managing in-app purchases, this app uses Revenuecat.
 
 ## Log Data
 
