@@ -1,13 +1,13 @@
 ---
 layout: page
-title: Source Tools
+title: CodeTools
 ---
 
-# Source Tools (Xcode Source Editor Extension)
+# CodeTools (Xcode Source Editor Extension)
 
 ## Privacy Policy
 
-Source Tools for Xcode does not collect any data.
+CodeTools for Xcode does not collect any data.
 
 ## Third party code
 
