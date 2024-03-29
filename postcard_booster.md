@@ -1,13 +1,18 @@
 ---
 layout: page
-title: Postcard Booster
+title: AR Postcards
 ---
 
-# Postcard Booster
+# AR Postcards
 
 ## Privacy Policy
 
-Postcard Booster does not collect any data.
+AR Postcards itself does not collect any data.
+
+We use TelemetryDeck to collect anonymized usage data. This helps us understand how our users are using our app and how we can improve it. TelemetryDeck does not collect any personally identifiable information. You can read more about TelemetryDeck’s privacy policy at https://telemetrydeck.com/privacy.
+
+We use RevenueCat to proccess In-App-Purches. RevenueCat does not collect any personally identifiable information. You can read more about 
+RevenueCat's privacy policy at https://www.revenuecat.com/privacy/.
 
 ## Third party code
 
