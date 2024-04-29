@@ -24,7 +24,6 @@ description: >- # this means to ignore newlines until "baseurl:"
     A blog about Xcode, iOS development and test-driven development.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://dasdom.dev" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: dasdom
 github_username:  dasdom
 
 twitter:
