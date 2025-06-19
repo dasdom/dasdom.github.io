@@ -46,4 +46,6 @@ What do you think?
 
 Let me know on [Mastodon](https://chaos.social/@dasdom).
 
+Apple, if you need that code, my DM are open. ;)
+
 (No AI was used to write this post.)
