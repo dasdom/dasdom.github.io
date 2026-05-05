@@ -6,7 +6,7 @@ description: The future nobody asked for.
 tags: Xcode, iOS, AI, LLM
 ---
 
-When scrolling through the internet is seems like everyone is using AI coding assistants ("agents") *AND* is
+When scrolling through the internet it seems like everyone is using AI coding assistants ("agents") *AND* is
 loving it. 
 I still don't get it.
 
