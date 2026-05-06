@@ -11,7 +11,7 @@ loving it.
 I still don't get it.
 
 I try not to use AI for coding. 
-It's getting harder every day because employers believe that they can save truck loads of money when everyone is reading code instead of writing code.
+It's getting harder every day because people believe that they can save truck loads of money when everyone is reading code instead of writing code.
 
 For me there are several reasons to avoid this new kind of software development. 
 Some very important, some less so. 
@@ -79,15 +79,11 @@ Without doing the hard work I would never achieved this understanding.
 
 # 5. Bad results
 
-I was asked to use coding agents at work, so I did.
+Over the last few weeks I used coding agents.
 Results are underwhelming.
 Sometimes the agents tells me that I could improve my code.
 Sometimes the results are trash.
 At best the result is what I would have written but without the joy.
-
-This means, I'm asked to use coding agents to increase the profit of my employer without any
-advantages for me.
-I don't get more money when the coding agent produces more bad code in less time than I could.
 
 As always with conmen if you experience problems like this it's either your fault or the next [snake
 oil](https://en.wikipedia.org/wiki/Snake_oil) (model) will fix all your problems.
@@ -121,6 +117,3 @@ Why should I buy myself into addiction?
 
 -- Douglas Adams
 
-# Let's hate together
-
-Let's hate together on [Mastodon](https://chaos.social/@dasdom).
